@@ -10,7 +10,7 @@ import UIKit
 import SofaAcademic
 import SnapKit
 
-class MatchViewModel {
+struct MatchViewModel {
     private let event: Event
     
     init(event: Event) {
@@ -56,13 +56,25 @@ class MatchViewModel {
         return event.awayTeam.name
     }
     
+    var homeTeamLogo: UIImage? {
+        return UIImage(named: event.homeTeam.name)
+    }
+        
+    var awayTeamLogo: UIImage? {
+        return UIImage(named: event.awayTeam.name)
+    }
+    
     var homeScore: String {
-        guard let score = event.homeScore else { return event.status == .notStarted ? "" : "—"  }
+        guard let score = event.homeScore else {
+            return event.status == .notStarted ? "" : "—"
+        }
         return "\(score)"
     }
     
     var awayScore: String {
-        guard let score = event.awayScore else { return event.status == .notStarted ? "" : "—"  }
+        guard let score = event.awayScore else {
+            return event.status == .notStarted ? "" : "—"
+        }
         return "\(score)"
     }
     

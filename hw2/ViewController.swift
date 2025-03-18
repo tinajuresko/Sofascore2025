@@ -12,7 +12,6 @@ import SnapKit
 class ViewController: UIViewController {
 
     private let leagueView = LeagueView()
-    //private let matchView = MatchView()
     
     private let matchesStackView: UIStackView = {
         let stackView = UIStackView()
@@ -21,41 +20,42 @@ class ViewController: UIViewController {
         return stackView
     }()
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = AppStyles.Colors.appBackgroundColor
         
         view.addSubview(leagueView)
         leagueView.translatesAutoresizingMaskIntoConstraints = false
-        leagueView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(20)
-            make.leading.equalTo(view.safeAreaLayoutGuide.snp.leading).offset(16)
-            make.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing).offset(-16)
-            make.height.equalTo(56)
+        leagueView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).inset(24)
+            $0.leading.equalTo(view.safeAreaLayoutGuide.snp.leading).offset(16)
+            $0.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing).inset(16)
+            $0.height.equalTo(56)
         }
         
         view.addSubview(matchesStackView)
-        matchesStackView.snp.makeConstraints { make in
-            make.top.equalTo(leagueView.snp.bottom).offset(16)
-            make.leading.equalTo(view.safeAreaLayoutGuide.snp.leading).offset(16)
-            make.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing).offset(-16)
+        matchesStackView.snp.makeConstraints {
+            $0.top.equalTo(leagueView.snp.bottom).offset(16)
+            $0.leading.equalTo(view.safeAreaLayoutGuide.snp.leading).offset(16)
+            $0.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing).inset(16)
+            $0.bottom.lessThanOrEqualTo(view.safeAreaLayoutGuide.snp.bottom).inset(16)
         }
 
         
         let league = Homework2DataSource().laLigaLeague()
-        leagueView.configure(league: league)
+        leagueView.countryLabel(league.country?.name ?? "Unkown")
+        leagueView.nameLabel(league.name)
         
         let events = Homework2DataSource().laLigaEvents()
         for event in events {
             let matchView = MatchView()
             let viewModel = MatchViewModel(event: event)
-            matchView.configure(viewModel: viewModel)
+            matchView.configure(with: viewModel)
             
             matchesStackView.addArrangedSubview(matchView)
             
-            matchView.snp.makeConstraints { make in
-                make.height.equalTo(56)
+            matchView.snp.makeConstraints {
+                $0.height.equalTo(56)
             }
         }
     }

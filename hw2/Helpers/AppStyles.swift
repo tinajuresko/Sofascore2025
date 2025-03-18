@@ -13,16 +13,18 @@ enum AppStyles {
     enum Colors {
         static let primary = UIColor(named: "PrimaryBlackColor") // definirana u assets
         static let secondary = UIColor(named: "SecondaryGrayColor")
+        static let dividerColor = UIColor(named: "DividerColor")
+        static let appBackgroundColor = UIColor(named: "AppBackgroundColor")
+    }
+}
+
+extension UIFont {
+    static func regular14() -> UIFont? {
+        return UIFont(name: "Roboto-Regular", size: 14)
     }
     
-    enum Fonts {
-        static func regular(size: CGFloat) -> UIFont? {
-            return UIFont(name: "Roboto-Regular", size: size)
-        }
-        
-        static func bold(size: CGFloat) -> UIFont? {
-            return UIFont(name: "Roboto-Bold", size: size)
-        }
+    static func regularBold14() -> UIFont? {
+        return UIFont(name: "Roboto-Bold", size: 14)
     }
 }
 

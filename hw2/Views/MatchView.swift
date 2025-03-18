@@ -12,22 +12,66 @@ import SnapKit
 
 class MatchView: BaseView {
     
-    private let timeLabel = UILabel()
-    private let timeStatusLabel = UILabel()
-    private let dividerImageView = UIImageView()
-    private let homeTeamLogoImageView = UIImageView()
-    private let awayTeamLogoImageView = UIImageView()
-    private let homeTeamLabel = UILabel()
-    private let awayTeamLabel = UILabel()
-    private let homeScoreLabel = UILabel()
-    private let awayScoreLabel = UILabel()
+    private let timeLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private let timeStatusLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private let dividerView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private let homeTeamLogoImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+    
+    private let awayTeamLogoImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+    
+    private let homeTeamLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private let awayTeamLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private let homeScoreLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private let awayScoreLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
     
     override func addViews() {
         super.addViews()
         addSubview(timeLabel)
         addSubview(timeStatusLabel)
         
-        addSubview(dividerImageView)
+        addSubview(dividerView)
         
         addSubview(homeTeamLogoImageView)
         addSubview(homeTeamLabel)
@@ -39,102 +83,116 @@ class MatchView: BaseView {
     }
     
     override func styleViews() {
-        super.styleViews()
+        timeLabel.font = .regular14()
+        timeLabel.textColor = AppStyles.Colors.secondary
+        timeStatusLabel.font = .regular14()
         
-        StylingHelper.styleImageView(imageView: dividerImageView, imageName: "DividerHorizontal")
-        if let regularFont = AppStyles.Fonts.regular(size: 14) {
-            StylingHelper.styleLabel(label: timeLabel, font: regularFont, color: AppStyles.Colors.secondary ?? .gray, textAlignment: .center)
-            StylingHelper.styleLabel(label: homeTeamLabel, font: regularFont, color: AppStyles.Colors.secondary ?? .gray)
-            StylingHelper.styleLabel(label: awayTeamLabel, font: regularFont, color: AppStyles.Colors.primary ?? .black, textAlignment: .left)
-        }
+        dividerView.backgroundColor = AppStyles.Colors.dividerColor
+        
+        homeTeamLogoImageView.contentMode = .scaleAspectFit
+        awayTeamLogoImageView.contentMode = .scaleAspectFit
+        
+        homeTeamLabel.font = .regular14()
+        homeTeamLabel.textColor = AppStyles.Colors.secondary
+        homeTeamLabel.numberOfLines = 0
+        homeTeamLabel.lineBreakMode = .byWordWrapping
+        
+        awayTeamLabel.font = .regular14()
+        awayTeamLabel.textColor = AppStyles.Colors.primary
+        awayTeamLabel.numberOfLines = 0
+        awayTeamLabel.lineBreakMode = .byWordWrapping
+        
+        homeScoreLabel.font = .regular14()
+        awayScoreLabel.font = .regular14()
+        
     }
     
     override func setupConstraints() {
         super.setupConstraints()
                 
-            timeLabel.snp.makeConstraints { make in
-                make.left.equalToSuperview().offset(4)
-                make.top.equalToSuperview().offset(10)
-                make.centerY.equalTo(dividerImageView).offset(-10)
-                make.width.equalTo(56)
-                make.height.equalTo(16)
+            timeLabel.snp.makeConstraints {
+                $0.leading.equalToSuperview().offset(4)
+                $0.top.equalToSuperview().offset(10)
+                $0.width.equalTo(56)
+                $0.height.equalTo(16)
             }
             
-            timeStatusLabel.snp.makeConstraints { make in
-                make.centerX.equalTo(timeLabel)
-                make.top.equalTo(timeLabel.snp.bottom).offset(4)
-                make.width.equalTo(56)
-                make.height.equalTo(16)
+            timeStatusLabel.snp.makeConstraints {
+                $0.centerX.equalTo(timeLabel)
+                $0.top.equalTo(timeLabel.snp.bottom).offset(4)
+                $0.width.equalTo(56)
+                $0.height.equalTo(16)
             }
             
-            dividerImageView.snp.makeConstraints { make in
-                make.centerY.equalTo(homeTeamLogoImageView).offset(10)
-                make.left.equalToSuperview().offset(64)
-                make.width.equalTo(1)
-                make.height.equalTo(40)
+            dividerView.snp.makeConstraints {
+                $0.leading.equalTo(timeLabel.snp.trailing).offset(16)
+                $0.width.equalTo(1)
+                $0.top.bottom.equalToSuperview().inset(8)
             }
             
-            homeTeamLogoImageView.snp.makeConstraints { make in
-                make.left.equalTo(dividerImageView.snp.right).offset(16)
-                make.width.height.equalTo(16)
+            homeTeamLogoImageView.snp.makeConstraints {
+                $0.leading.equalTo(dividerView.snp.trailing).offset(16)
+                $0.size.equalTo(16)
+                $0.top.equalToSuperview().offset(10)
             }
             
-            homeTeamLabel.snp.makeConstraints { make in
-                make.centerY.equalTo(homeTeamLogoImageView)
-                make.left.equalTo(homeTeamLogoImageView.snp.right).offset(8)
-                make.width.equalTo(192)
-                make.height.equalTo(16)
-                
+            homeTeamLabel.snp.makeConstraints {
+                $0.centerY.equalTo(homeTeamLogoImageView)
+                $0.leading.equalTo(homeTeamLogoImageView.snp.trailing).offset(8)
+                $0.trailing.equalTo(homeScoreLabel.snp.leading).offset(-8)
+                $0.height.equalTo(16)
             }
             
-            homeScoreLabel.snp.makeConstraints { make in
-                make.centerY.equalTo(homeTeamLogoImageView)
-                make.left.equalTo(homeTeamLabel.snp.right).offset(16)
-                make.width.equalTo(32)
-                make.height.equalTo(16)
+            homeScoreLabel.snp.makeConstraints {
+                $0.centerY.equalTo(homeTeamLogoImageView)
+                $0.trailing.equalToSuperview().offset(-16)
+                $0.width.equalTo(32)
+                $0.height.equalTo(16)
             }
             
-            awayTeamLogoImageView.snp.makeConstraints { make in
-                make.top.equalTo(homeTeamLogoImageView.snp.bottom).offset(4)
-                make.left.equalTo(dividerImageView.snp.right).offset(16)
-                make.width.height.equalTo(16)
+            awayTeamLogoImageView.snp.makeConstraints {
+                $0.top.equalTo(homeTeamLogoImageView.snp.bottom).offset(4)
+                $0.leading.equalTo(dividerView.snp.trailing).offset(16)
+                $0.size.equalTo(16)
             }
                 
-            awayTeamLabel.snp.makeConstraints { make in
-                make.centerY.equalTo(awayTeamLogoImageView)
-                make.left.equalTo(awayTeamLogoImageView.snp.right).offset(8)
-                make.width.equalTo(192)
-                make.height.equalTo(16)
-                
+            awayTeamLabel.snp.makeConstraints {
+                $0.centerY.equalTo(awayTeamLogoImageView)
+                $0.leading.equalTo(awayTeamLogoImageView.snp.trailing).offset(8)
+                $0.trailing.equalTo(awayScoreLabel.snp.leading).offset(-8)
+                $0.height.equalTo(16)
             }
                 
-            awayScoreLabel.snp.makeConstraints { make in
-                make.centerY.equalTo(awayTeamLogoImageView)
-                make.left.equalTo(homeTeamLabel.snp.right).offset(16)
-                make.width.equalTo(32)
-                make.height.equalTo(16)
+            awayScoreLabel.snp.makeConstraints {
+                $0.centerY.equalTo(awayTeamLogoImageView)
+                $0.trailing.equalToSuperview().offset(-16)
+                $0.width.equalTo(32)
+                $0.height.equalTo(16)
             }
         }
         
-    func configure(viewModel: MatchViewModel?) {
-        guard let viewModel = viewModel else { return }
+    func configure(with viewModel: MatchViewModel) {
+        let viewModel = viewModel
         
         timeLabel.text = viewModel.time
+        timeLabel.textAlignment = .center
         timeStatusLabel.text = viewModel.timeStatusText
+        timeStatusLabel.textColor = viewModel.timeStatusColor
+        timeStatusLabel.textAlignment = .center
+        
+        homeTeamLogoImageView.image = viewModel.homeTeamLogo
         
         homeTeamLabel.text = viewModel.homeTeamName
         homeScoreLabel.text = viewModel.homeScore
+        homeScoreLabel.textColor = viewModel.homeScoreColor
+        homeScoreLabel.textAlignment = .right
+        
+        awayTeamLogoImageView.image = viewModel.awayTeamLogo
             
         awayTeamLabel.text = viewModel.awayTeamName
         awayScoreLabel.text = viewModel.awayScore
+        awayScoreLabel.textColor = viewModel.awayScoreColor
+        awayScoreLabel.textAlignment = .right
         
-        if let regularFont = AppStyles.Fonts.regular(size: 14) {
-            StylingHelper.styleLabel(label: timeStatusLabel, font: regularFont, color: viewModel.timeStatusColor, textAlignment: .center)
-            StylingHelper.styleLabel(label: homeScoreLabel, font: regularFont, color: viewModel.homeScoreColor, textAlignment: .right)
-            StylingHelper.styleLabel(label: awayScoreLabel, font: regularFont, color: viewModel.awayScoreColor, textAlignment: .right)
-        }
-        
-        StylingHelper.styleImageView(imageView: homeTeamLogoImageView, imageName: viewModel.homeTeamName)
-        StylingHelper.styleImageView(imageView: awayTeamLogoImageView, imageName: viewModel.awayTeamName)
     }
 }
