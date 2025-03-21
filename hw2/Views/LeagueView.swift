@@ -12,32 +12,11 @@ import SnapKit
 
 class LeagueView: BaseView {
     
-    private let logoImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "LaLiga")
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        return imageView
-    }()
+    private let countryLabel = UILabel()
+    private let nameLabel = UILabel()
+    private let logoImageView = UIImageView()
+    private let arrowImageView = UIImageView()
     
-    private let countryLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private let arrowImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "Vector")
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        return imageView
-    }()
-    
-    private let nameLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-        
     override func addViews() {
         super.addViews()
         addSubview(logoImageView)
@@ -47,15 +26,17 @@ class LeagueView: BaseView {
     }
 
     override func styleViews() {
+        logoImageView.image = UIImage(named: "LaLiga")
+        arrowImageView.image = UIImage(named: "Vector")
         logoImageView.contentMode = .scaleAspectFit
         arrowImageView.contentMode = .scaleAspectFit
         
-        countryLabel.font = .regularBold14()
+        countryLabel.font = UIFont.regularBold14
         countryLabel.textColor = AppStyles.Colors.primary
         countryLabel.numberOfLines = 0
         countryLabel.lineBreakMode = .byWordWrapping
         
-        nameLabel.font = .regularBold14()
+        nameLabel.font = UIFont.regularBold14
         nameLabel.textColor = AppStyles.Colors.secondary
         nameLabel.numberOfLines = 0
         nameLabel.lineBreakMode = .byWordWrapping
@@ -66,7 +47,7 @@ class LeagueView: BaseView {
         
         logoImageView.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(16)
-            $0.centerY.equalToSuperview()
+            $0.top.bottom.equalToSuperview().inset(12)
             $0.size.equalTo(32)
         }
         

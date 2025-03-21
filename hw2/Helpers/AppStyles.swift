@@ -18,13 +18,4 @@ enum AppStyles {
     }
 }
 
-extension UIFont {
-    static func regular14() -> UIFont? {
-        return UIFont(name: "Roboto-Regular", size: 14)
-    }
-    
-    static func regularBold14() -> UIFont? {
-        return UIFont(name: "Roboto-Bold", size: 14)
-    }
-}
 

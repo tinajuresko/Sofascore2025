@@ -13,28 +13,27 @@ class ViewController: UIViewController {
 
     private let leagueView = LeagueView()
     
-    private let matchesStackView: UIStackView = {
+    private let matchesVerticalStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = AppStyles.Colors.appBackgroundColor
+        view.backgroundColor = UIColor(named: "AppBackgroundColor")
         
         view.addSubview(leagueView)
         leagueView.translatesAutoresizingMaskIntoConstraints = false
         leagueView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).inset(24)
-            $0.leading.equalTo(view.safeAreaLayoutGuide.snp.leading).offset(16)
-            $0.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing).inset(16)
+            $0.leading.equalTo(view).offset(16)
+            $0.trailing.equalTo(view).inset(16)
             $0.height.equalTo(56)
         }
         
-        view.addSubview(matchesStackView)
-        matchesStackView.snp.makeConstraints {
+        view.addSubview(matchesVerticalStackView)
+        matchesVerticalStackView.snp.makeConstraints {
             $0.top.equalTo(leagueView.snp.bottom).offset(16)
             $0.leading.equalTo(view.safeAreaLayoutGuide.snp.leading).offset(16)
             $0.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing).inset(16)
@@ -52,7 +51,7 @@ class ViewController: UIViewController {
             let viewModel = MatchViewModel(event: event)
             matchView.configure(with: viewModel)
             
-            matchesStackView.addArrangedSubview(matchView)
+            matchesVerticalStackView.addArrangedSubview(matchView)
             
             matchView.snp.makeConstraints {
                 $0.height.equalTo(56)
