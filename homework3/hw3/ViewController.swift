@@ -8,7 +8,6 @@ class ViewController: UIViewController {
     private let menuView = MenuView()
     private let matchesTableView: UITableView = {
         let tableView = UITableView()
-        tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.separatorStyle = .none
         return tableView
     }()
@@ -17,7 +16,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = AppStyles.Colors.appBackgroundColor
+        view.backgroundColor = UIColor(named: "AppBackgroundColor")
         
         sections = groupedEvents()
         
@@ -50,7 +49,7 @@ class ViewController: UIViewController {
         matchesTableView.register(LeagueHeaderView.self, forHeaderFooterViewReuseIdentifier: "LeagueHeader")
         matchesTableView.snp.makeConstraints {
             $0.top.equalTo(menuView.snp.bottom).offset(16)
-            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+            $0.leading.trailing.equalTo(view)
             $0.bottom.equalTo(view.safeAreaLayoutGuide)
         }
     }

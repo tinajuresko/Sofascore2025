@@ -32,7 +32,7 @@ class SportCellView: BaseView {
     
     override func styleViews() {
         sportNameLabel.textAlignment = .center
-        sportNameLabel.font = .regular14()
+        sportNameLabel.setStyle(.regular14)
         sportNameLabel.textColor = .white
         sportIconImageView.contentMode = .scaleAspectFit
     }

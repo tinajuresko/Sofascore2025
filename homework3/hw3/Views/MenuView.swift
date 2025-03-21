@@ -17,11 +17,7 @@ class MenuView: BaseView {
     var americanFootballCell: SportCellView?
     private let viewModel = MenuViewModel(selectedSport: .football)
     private let sportsStackView: UIStackView
-    private let selectorLine: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
+    private let selectorLine = UIView()
     
     override init() {
         self.sportsStackView = UIStackView()
