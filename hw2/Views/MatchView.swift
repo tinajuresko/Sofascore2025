@@ -62,7 +62,8 @@ class MatchView: BaseView {
         
         homeScoreLabel.setStyle(.regular14)
         homeScoreLabel.textAlignment = .right
-        awayScoreLabel.setStyle(.regular14)
+
+        awayScoreLabel.setStyle(.regular14) 
         awayScoreLabel.textAlignment = .right
         
     }
