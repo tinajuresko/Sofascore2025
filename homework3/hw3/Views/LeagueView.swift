@@ -16,7 +16,7 @@ class LeagueView: BaseView {
     private let nameLabel = UILabel()
     private let logoImageView = UIImageView()
     private let arrowImageView = UIImageView()
-    
+        
     override func addViews() {
         super.addViews()
         addSubview(logoImageView)
@@ -26,19 +26,18 @@ class LeagueView: BaseView {
     }
 
     override func styleViews() {
-        logoImageView.image = UIImage(named: "LaLiga")
         arrowImageView.image = UIImage(named: "Vector")
         logoImageView.contentMode = .scaleAspectFit
         arrowImageView.contentMode = .scaleAspectFit
         
-        countryLabel.font = UIFont.regularBold14
-        countryLabel.textColor = AppStyles.Colors.primary
-        countryLabel.numberOfLines = 0
+        countryLabel.font = .regularBold14
+        countryLabel.textColor = .primaryBlack
+        countryLabel.numberOfLines = 2
         countryLabel.lineBreakMode = .byWordWrapping
         
-        nameLabel.font = UIFont.regularBold14
-        nameLabel.textColor = AppStyles.Colors.secondary
-        nameLabel.numberOfLines = 0
+        nameLabel.font = .regularBold14
+        nameLabel.textColor = .secondaryGray
+        nameLabel.numberOfLines = 2
         nameLabel.lineBreakMode = .byWordWrapping
     }
         
@@ -54,27 +53,31 @@ class LeagueView: BaseView {
         countryLabel.snp.makeConstraints {
             $0.centerY.equalTo(logoImageView)
             $0.leading.equalTo(logoImageView.snp.trailing).offset(32)
+            $0.trailing.lessThanOrEqualTo(arrowImageView.snp.leading).offset(-10)
         }
         
         arrowImageView.snp.makeConstraints {
             $0.centerY.equalTo(countryLabel)
             $0.leading.equalTo(countryLabel.snp.trailing).offset(10)
-            $0.height.equalTo(5)
-            $0.width.equalTo(10)
+            $0.size.equalTo(10)
         }
         
         nameLabel.snp.makeConstraints {
             $0.centerY.equalTo(arrowImageView)
             $0.leading.equalTo(arrowImageView.snp.trailing).offset(10)
-            $0.trailing.equalToSuperview().offset(-16)
+            $0.trailing.lessThanOrEqualToSuperview().offset(-16)
         }
     }
-    func countryLabel(_ text: String) {
+    
+    func setLogoImageView(_ imageName: String) {
+        logoImageView.image = UIImage(named: imageName)
+    }
+    
+    func setCountryLabel(_ text: String) {
         countryLabel.text = text
     }
     
-    func nameLabel(_ name: String) {
+    func setNameLabel(_ name: String) {
         nameLabel.text = name
     }
 }
-
