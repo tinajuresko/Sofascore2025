@@ -27,10 +27,10 @@ class LeagueHeaderView: UITableViewHeaderFooterView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(with league: League?) {
-        leagueView.setCountryLabel(league?.country?.name ?? "Unknown")
-        leagueView.setNameLabel(league?.name ?? "Unknown League")
-        leagueView.setLogoImageView(league?.name ?? "Unknown League")
+    func configure(with league: League) {
+        leagueView.setCountryLabel(league.country?.name ?? "Unknown")
+        leagueView.setNameLabel(league.name)
+        leagueView.setLogoImageView(league.name)
     }
 }
 

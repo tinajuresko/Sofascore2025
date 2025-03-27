@@ -12,10 +12,10 @@ import SnapKit
 
 class MenuView: BaseView {
     
-    var footballCell: SportCellView?
-    var basketballCell: SportCellView?
-    var americanFootballCell: SportCellView?
-    private let viewModel = MenuViewModel(selectedSport: .football)
+    var footballTabMenuView: SportCellView?
+    var basketballTabMenuView: SportCellView?
+    var americanFootballTabMenuView: SportCellView?
+    private var viewModel = MenuViewModel(selectedSport: .football)
     private let sportsStackView: UIStackView
     private let selectorLine = UIView()
     
@@ -38,21 +38,20 @@ class MenuView: BaseView {
     }
     
     func configureSportCells() {
-        guard let footballIcon = UIImage(named: "icon_football"),
-              let basketballIcon = UIImage(named: "icon_basketball"),
-              let americanFootballIcon = UIImage(named: "icon_american_football")
-        else {
-            print("Missing icon(s)")
-            return
-        }
+        let football = SportType.football
+        let basketball = SportType.basketball
+        let americanFootball = SportType.americanFootball
         
-        footballCell = SportCellView(sportIcon: footballIcon, sportName: "Football")
-        basketballCell = SportCellView(sportIcon: basketballIcon, sportName: "Basketball")
-        americanFootballCell = SportCellView(sportIcon: americanFootballIcon, sportName: "American football")
+        footballTabMenuView = SportCellView()
+        footballTabMenuView?.configure(with: football)
+        basketballTabMenuView = SportCellView()
+        basketballTabMenuView?.configure(with: basketball)
+        americanFootballTabMenuView = SportCellView()
+        americanFootballTabMenuView?.configure(with: americanFootball)
         
-        footballCell?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(selectFootball)))
-        basketballCell?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(selectBasketball)))
-        americanFootballCell?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(selectAmericanFootball)))
+        footballTabMenuView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(selectFootball)))
+        basketballTabMenuView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(selectBasketball)))
+        americanFootballTabMenuView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(selectAmericanFootball)))
     }
     
     func configureStackView() {
@@ -60,19 +59,19 @@ class MenuView: BaseView {
         sportsStackView.distribution = .fillEqually
         sportsStackView.alignment = .fill
         
-        if let footballCell = footballCell {
-            sportsStackView.addArrangedSubview(footballCell)
+        if let footballTabMenuView = footballTabMenuView {
+            sportsStackView.addArrangedSubview(footballTabMenuView)
         }
-        if let basketballCell = basketballCell {
-            sportsStackView.addArrangedSubview(basketballCell)
+        if let basketballTabMenuView = basketballTabMenuView {
+            sportsStackView.addArrangedSubview(basketballTabMenuView)
         }
-        if let americanFootballCell = americanFootballCell {
-            sportsStackView.addArrangedSubview(americanFootballCell)
+        if let americanFootballTabMenuView = americanFootballTabMenuView {
+            sportsStackView.addArrangedSubview(americanFootballTabMenuView)
         }
     }
     
     override func styleViews() {
-        self.backgroundColor = AppStyles.Colors.headerBackgroundColor
+        self.backgroundColor = .headerBackground
         selectorLine.backgroundColor = .white
     }
     
@@ -82,11 +81,11 @@ class MenuView: BaseView {
         sportsStackView.snp.makeConstraints {
             $0.edges.equalToSuperview().offset(4)
         }
-        if let footballCell = footballCell {
+        if let footballTabMenuView = footballTabMenuView {
             selectorLine.snp.makeConstraints {
-                $0.top.equalTo(footballCell.snp.bottom).offset(4)
-                $0.centerX.equalTo(footballCell)
-                $0.width.equalTo(footballCell).multipliedBy(0.6)
+                $0.top.equalTo(footballTabMenuView.snp.bottom).offset(4)
+                $0.centerX.equalTo(footballTabMenuView)
+                $0.width.equalTo(footballTabMenuView).multipliedBy(0.6)
                 $0.height.equalTo(4)
                 $0.bottom.equalToSuperview().inset(4)
             }
@@ -94,31 +93,35 @@ class MenuView: BaseView {
     }
     
     func updateSelectorPosition(for sport: SportType) {
-        var selectedCell: UIView?
+        var selectedTabMenuView: UIView?
             
         switch sport {
         case .football:
-            selectedCell = footballCell
+            selectedTabMenuView = footballTabMenuView
         case .basketball:
-            selectedCell = basketballCell
+            selectedTabMenuView = basketballTabMenuView
         case .americanFootball:
-            selectedCell = americanFootballCell
+            selectedTabMenuView = americanFootballTabMenuView
         }
             
-        guard let cell = selectedCell else { return }
+        guard let tabMenuView = selectedTabMenuView else { return }
 
+        updateSelectorLineConstraints(tabMenuView: tabMenuView)
+    }
+    
+    func updateSelectorLineConstraints(tabMenuView: UIView) {
         UIView.animate(withDuration: 0.3) {
             self.selectorLine.snp.remakeConstraints {
-                $0.top.equalTo(cell.snp.bottom).offset(4)
-                $0.centerX.equalTo(cell)
-                $0.width.equalTo(cell).multipliedBy(0.6)
+                $0.top.equalTo(tabMenuView.snp.bottom).offset(4)
+                $0.centerX.equalTo(tabMenuView)
+                $0.width.equalTo(tabMenuView)
                 $0.height.equalTo(4)
                 $0.bottom.equalToSuperview().inset(4)
             }
             self.layoutIfNeeded()
         }
     }
-        
+    
     @objc func selectFootball() {
         viewModel.selectSport(.football)
     }

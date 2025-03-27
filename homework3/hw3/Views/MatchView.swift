@@ -40,23 +40,23 @@ class MatchView: BaseView {
     
     override func styleViews() {
         timeLabel.setStyle(.regular14)
-        timeLabel.textColor = AppStyles.Colors.secondary
+        timeLabel.textColor = .secondaryGray
         timeStatusLabel.setStyle(.regular14)
         timeLabel.textAlignment = .center
         timeStatusLabel.textAlignment = .center
         
-        dividerView.backgroundColor = AppStyles.Colors.dividerColor
+        dividerView.backgroundColor = .divider
         
         homeTeamLogoImageView.contentMode = .scaleAspectFit
         awayTeamLogoImageView.contentMode = .scaleAspectFit
         
         homeTeamLabel.setStyle(.regular14)
-        homeTeamLabel.textColor = AppStyles.Colors.secondary
+        homeTeamLabel.textColor = .secondaryGray
         homeTeamLabel.numberOfLines = 0
         homeTeamLabel.lineBreakMode = .byWordWrapping
         
         awayTeamLabel.setStyle(.regular14)
-        awayTeamLabel.textColor = AppStyles.Colors.primary
+        awayTeamLabel.textColor = .primaryBlack
         awayTeamLabel.numberOfLines = 0
         awayTeamLabel.lineBreakMode = .byWordWrapping
         
@@ -74,13 +74,11 @@ class MatchView: BaseView {
             $0.leading.equalToSuperview().offset(4)
             $0.top.equalToSuperview().offset(10)
             $0.width.equalTo(56)
-            $0.height.equalTo(16)
         }
             
         timeStatusLabel.snp.makeConstraints {
             $0.centerX.equalTo(timeLabel)
             $0.top.equalTo(timeLabel.snp.bottom).offset(4)
-            $0.height.equalTo(16)
             $0.leading.equalToSuperview().inset(16)
         }
             
@@ -100,17 +98,13 @@ class MatchView: BaseView {
             $0.centerY.equalTo(homeTeamLogoImageView)
             $0.leading.equalTo(homeTeamLogoImageView.snp.trailing).offset(8)
             $0.trailing.equalTo(homeScoreLabel.snp.leading).offset(-8)
-            $0.height.equalTo(16)
         }
             
         homeScoreLabel.snp.makeConstraints {
             $0.centerY.equalTo(homeTeamLogoImageView)
             $0.trailing.equalToSuperview().offset(-16)
             $0.leading.greaterThanOrEqualTo(homeTeamLogoImageView.snp.trailing).offset(8)
-            $0.height.equalTo(16)
         }
-        homeScoreLabel.adjustsFontSizeToFitWidth = true
-        homeScoreLabel.minimumScaleFactor = 0.5
             
         awayTeamLogoImageView.snp.makeConstraints {
             $0.top.equalTo(homeTeamLogoImageView.snp.bottom).offset(4)
@@ -122,17 +116,13 @@ class MatchView: BaseView {
             $0.centerY.equalTo(awayTeamLogoImageView)
             $0.leading.equalTo(awayTeamLogoImageView.snp.trailing).offset(8)
             $0.trailing.equalTo(awayScoreLabel.snp.leading).offset(-8)
-            $0.height.equalTo(16)
         }
                 
         awayScoreLabel.snp.makeConstraints {
             $0.centerY.equalTo(awayTeamLogoImageView)
             $0.trailing.equalToSuperview().offset(-16)
             $0.leading.greaterThanOrEqualTo(awayTeamLogoImageView.snp.trailing).offset(8)
-            $0.height.equalTo(16)
         }
-        awayScoreLabel.adjustsFontSizeToFitWidth = true
-        awayScoreLabel.minimumScaleFactor = 0.5
     }
         
     func configure(with viewModel: MatchViewModel) {

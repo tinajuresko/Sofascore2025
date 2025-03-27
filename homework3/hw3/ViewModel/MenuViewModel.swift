@@ -10,13 +10,8 @@ import UIKit
 import SofaAcademic
 import SnapKit
 
-enum SportType {
-    case football
-    case basketball
-    case americanFootball
-}
 
-class MenuViewModel {
+struct MenuViewModel {
     var selectedSport: SportType
     var onSportSelectionChanged: ((SportType) -> Void)?
     
@@ -24,7 +19,7 @@ class MenuViewModel {
         self.selectedSport = selectedSport
     }
     
-    func selectSport(_ sport: SportType) {
+    mutating func selectSport(_ sport: SportType) {
         self.selectedSport = sport
         
         onSportSelectionChanged?(sport)
@@ -33,11 +28,11 @@ class MenuViewModel {
     func getSportCell(for sport: SportType) -> UIView? {
         switch sport {
         case .football:
-            return MenuView().footballCell
+            return MenuView().footballTabMenuView
         case .basketball:
-            return MenuView().basketballCell
+            return MenuView().basketballTabMenuView
         case .americanFootball:
-            return MenuView().americanFootballCell
+            return MenuView().americanFootballTabMenuView
         }
     }
 }

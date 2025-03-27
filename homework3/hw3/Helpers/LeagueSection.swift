@@ -15,17 +15,5 @@ struct LeagueSection {
     let matches: [Event]
 }
 
-func groupedEvents() -> [LeagueSection] {
-    let allEvents = Homework3DataSource().events()
-    
-    let grouped = Dictionary(grouping: allEvents, by: { $0.league?.id })
-    
-    return grouped.compactMap { (key, events) in
-        if let leagueId = key {
-            let league = allEvents.first { $0.league?.id == leagueId }?.league
-            return LeagueSection(league: league!, matches: events.sorted { $0.startTimestamp < $1.startTimestamp })
-        }
-        return nil
-    }
-}
+
 

@@ -44,7 +44,7 @@ struct MatchViewModel {
         case .inProgress:
             return .red
         default:
-            return AppStyles.Colors.secondary ?? .gray
+            return .secondaryGray
         }
     }
     
@@ -83,7 +83,7 @@ struct MatchViewModel {
         case .inProgress, .halftime:
             return UIColor.red
         case .finished:
-            return AppStyles.Colors.secondary ?? .gray
+            return .secondaryGray
         default:
             return .clear
         }
@@ -94,7 +94,7 @@ struct MatchViewModel {
         case .inProgress, .halftime:
             return UIColor.red
         case .finished:
-            return AppStyles.Colors.primary ?? .black
+            return .primaryBlack
         default:
             return .clear
         }
