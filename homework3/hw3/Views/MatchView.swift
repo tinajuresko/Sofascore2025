@@ -15,8 +15,8 @@ class MatchView: BaseView {
     private let timeLabel = UILabel()
     private let timeStatusLabel = UILabel()
     private let dividerView = UIView()
-    private let homeTeamLogoImageView = UIImageView()
-    private let awayTeamLogoImageView = UIImageView()
+    private let homeTeamLogoImageView = AsyncImageView()
+    private let awayTeamLogoImageView = AsyncImageView()
     private let homeTeamLabel = UILabel()
     private let awayTeamLabel = UILabel()
     private let homeScoreLabel = UILabel()
@@ -132,13 +132,19 @@ class MatchView: BaseView {
         timeStatusLabel.text = viewModel.timeStatusText
         timeStatusLabel.textColor = viewModel.timeStatusColor
         
-        homeTeamLogoImageView.image = viewModel.homeTeamLogo
+        guard let homeTeamLogo = viewModel.homeTeamLogo else {
+            return
+        }
+        homeTeamLogoImageView.setImage(from: homeTeamLogo)
         
         homeTeamLabel.text = viewModel.homeTeamName
         homeScoreLabel.text = viewModel.homeScore
         homeScoreLabel.textColor = viewModel.homeScoreColor
         
-        awayTeamLogoImageView.image = viewModel.awayTeamLogo
+        guard let awayTeamLogo = viewModel.awayTeamLogo else {
+            return
+        }
+        awayTeamLogoImageView.setImage(from: awayTeamLogo)
             
         awayTeamLabel.text = viewModel.awayTeamName
         awayScoreLabel.text = viewModel.awayScore

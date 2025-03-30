@@ -56,12 +56,12 @@ struct MatchViewModel {
         return event.awayTeam.name
     }
     
-    var homeTeamLogo: UIImage? {
-        return UIImage(named: event.homeTeam.name)
+    var homeTeamLogo: String? {
+        return event.homeTeam.logoUrl
     }
         
-    var awayTeamLogo: UIImage? {
-        return UIImage(named: event.awayTeam.name)
+    var awayTeamLogo: String? {
+        return event.awayTeam.logoUrl
     }
     
     var homeScore: String {

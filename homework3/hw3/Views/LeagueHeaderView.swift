@@ -28,9 +28,9 @@ class LeagueHeaderView: UITableViewHeaderFooterView {
     }
     
     func configure(with league: League) {
-        leagueView.setCountryLabel(league.country?.name ?? "Unknown")
+        leagueView.setCountryLabel(league.country?.name)
         leagueView.setNameLabel(league.name)
-        leagueView.setLogoImageView(league.name)
+        leagueView.setLogoImageView(league.logoUrl)
     }
 }
 

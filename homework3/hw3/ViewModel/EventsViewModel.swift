@@ -12,19 +12,27 @@ import SnapKit
 
 struct EventsViewModel {
     var sections: [LeagueSection] = []
+    mutating func loadSections() -> [LeagueSection] {
+        let events = getEventData()
+        sections = getLeagueSections(for: events)
+        return sections
+    }
     
-    func getLeagueSections(allEvents: [Event]) -> [LeagueSection] {
+    func getLeagueSections(for events: [Event]) -> [LeagueSection] {
         
-        let grouped = Dictionary(grouping: allEvents, by: { $0.league?.id })
+        let grouped = Dictionary(grouping: events, by: { $0.league?.id })
         
-        return grouped.compactMap { (key, events) in
-            guard let league = events.first?.league else {
+        return grouped.compactMap { (leagueId, events) in
+            guard let league = events.compactMap({ $0.league }).first(where: { $0.id == leagueId }) else {
                 return nil
             }
             return LeagueSection(league: league, matches: events.sorted { $0.startTimestamp < $1.startTimestamp })
         }
     }
-
     
+    func getEventData() -> [Event]{
+        let events = Homework3DataSource().events()
+        return events
+    }
 }
 

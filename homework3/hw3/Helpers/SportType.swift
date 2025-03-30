@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-enum SportType {
+enum SportType: CaseIterable {
     case football
     case basketball
     case americanFootball
@@ -27,11 +27,11 @@ enum SportType {
     var icon: UIImage? {
         switch self {
         case .football:
-            return UIImage(named: "icon_football")
+            return .icon_football
         case .basketball:
-            return UIImage(named: "icon_basketball")
+            return .icon_basketball
         case .americanFootball:
-            return UIImage(named: "icon_american_football")
+            return .icon_american_football
         }
     }
 }

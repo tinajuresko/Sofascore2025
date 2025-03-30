@@ -24,15 +24,4 @@ struct MenuViewModel {
         
         onSportSelectionChanged?(sport)
     }
-    
-    func getSportCell(for sport: SportType) -> UIView? {
-        switch sport {
-        case .football:
-            return MenuView().footballTabMenuView
-        case .basketball:
-            return MenuView().basketballTabMenuView
-        case .americanFootball:
-            return MenuView().americanFootballTabMenuView
-        }
-    }
 }

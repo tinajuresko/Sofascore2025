@@ -7,11 +7,11 @@ class EventsViewController: UIViewController, BaseViewProtocol {
     private let menuView = MenuView()
     private let matchesTableView: UITableView = .init()
     var sections: [LeagueSection] = []
-    private let eventsViewModel = EventsViewModel()
+    private var eventsViewModel = EventsViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        sections = eventsViewModel.getLeagueSections(allEvents: getEventData())
+        sections = eventsViewModel.loadSections()
         addViews()
         setupConstraints()
         styleViews()
@@ -24,7 +24,6 @@ class EventsViewController: UIViewController, BaseViewProtocol {
     }
     
     func setupConstraints() {
-        topBackgroundView.backgroundColor = .headerBackground
         topBackgroundView.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview()
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.top)
@@ -35,9 +34,8 @@ class EventsViewController: UIViewController, BaseViewProtocol {
             $0.leading.trailing.equalToSuperview()
         }
         
-        setTableViewDelegates()
-        matchesTableView.register(MatchTableViewCell.self, forCellReuseIdentifier: "MatchCell")
-        matchesTableView.register(LeagueHeaderView.self, forHeaderFooterViewReuseIdentifier: "LeagueHeader")
+        setupTableView(matchesTableView: matchesTableView)
+        
         matchesTableView.snp.makeConstraints {
             $0.top.equalTo(menuView.snp.bottom).offset(16)
             $0.leading.trailing.equalTo(view)
@@ -48,16 +46,18 @@ class EventsViewController: UIViewController, BaseViewProtocol {
     func styleViews() {
         view.backgroundColor = .appBackground
         matchesTableView.separatorStyle = .none
-    }
-    
-    func getEventData() -> [Event]{
-        let allEvents = Homework3DataSource().events()
-        return allEvents
+        topBackgroundView.backgroundColor = .headerBackground
+        setTableViewDelegates()
     }
     
     func setTableViewDelegates() {
         matchesTableView.delegate = self
         matchesTableView.dataSource = self
+    }
+    
+    func setupTableView(matchesTableView: UITableView) {
+        matchesTableView.register(MatchTableViewCell.self, forCellReuseIdentifier: "MatchCell")
+        matchesTableView.register(LeagueHeaderView.self, forHeaderFooterViewReuseIdentifier: "LeagueHeader")
     }
 }
 

@@ -14,7 +14,7 @@ class LeagueView: BaseView {
     
     private let countryLabel = UILabel()
     private let nameLabel = UILabel()
-    private let logoImageView = UIImageView()
+    private let logoImageView = AsyncImageView()
     private let arrowImageView = UIImageView()
         
     override func addViews() {
@@ -54,6 +54,8 @@ class LeagueView: BaseView {
             $0.centerY.equalTo(logoImageView)
             $0.leading.equalTo(logoImageView.snp.trailing).offset(32)
             $0.trailing.lessThanOrEqualTo(arrowImageView.snp.leading).offset(-10)
+            
+            $0.width.lessThanOrEqualTo(200)
         }
         
         arrowImageView.snp.makeConstraints {
@@ -69,15 +71,18 @@ class LeagueView: BaseView {
         }
     }
     
-    func setLogoImageView(_ imageName: String) {
-        logoImageView.image = UIImage(named: imageName)
+    func setLogoImageView(_ imageUrl: String?) {
+        guard let imageUrl = imageUrl else {
+            return
+        }
+        logoImageView.setImage(from: imageUrl)
     }
     
-    func setCountryLabel(_ text: String) {
-        countryLabel.text = text
+    func setCountryLabel(_ countryName: String?) {
+        countryLabel.text = countryName
     }
     
-    func setNameLabel(_ name: String) {
-        nameLabel.text = name
+    func setNameLabel(_ leagueName: String) {
+        nameLabel.text = leagueName
     }
 }

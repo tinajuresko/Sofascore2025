@@ -6,14 +6,9 @@
 //
 
 import Foundation
-import UIKit
 import SofaAcademic
-import SnapKit
 
 struct LeagueSection {
     let league: League
     let matches: [Event]
 }
-
-
-
