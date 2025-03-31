@@ -27,17 +27,15 @@ class LeagueView: BaseView {
 
     override func styleViews() {
         arrowImageView.image = UIImage(named: "Vector")
-        logoImageView.contentMode = .scaleAspectFit
-        arrowImageView.contentMode = .scaleAspectFit
         
         countryLabel.font = .regularBold14
         countryLabel.textColor = .primaryBlack
-        countryLabel.numberOfLines = 2
+        countryLabel.numberOfLines = 0
         countryLabel.lineBreakMode = .byWordWrapping
         
         nameLabel.font = .regularBold14
         nameLabel.textColor = .secondaryGray
-        nameLabel.numberOfLines = 2
+        nameLabel.numberOfLines = 0
         nameLabel.lineBreakMode = .byWordWrapping
     }
         
@@ -53,8 +51,6 @@ class LeagueView: BaseView {
         countryLabel.snp.makeConstraints {
             $0.centerY.equalTo(logoImageView)
             $0.leading.equalTo(logoImageView.snp.trailing).offset(32)
-            $0.trailing.lessThanOrEqualTo(arrowImageView.snp.leading).offset(-10)
-            
             $0.width.lessThanOrEqualTo(200)
         }
         

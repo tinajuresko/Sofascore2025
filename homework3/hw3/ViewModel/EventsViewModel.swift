@@ -13,7 +13,7 @@ import SnapKit
 struct EventsViewModel {
     var sections: [LeagueSection] = []
     mutating func loadSections() -> [LeagueSection] {
-        let events = getEventData()
+        let events = Homework3DataSource().events()
         sections = getLeagueSections(for: events)
         return sections
     }
@@ -28,11 +28,6 @@ struct EventsViewModel {
             }
             return LeagueSection(league: league, matches: events.sorted { $0.startTimestamp < $1.startTimestamp })
         }
-    }
-    
-    func getEventData() -> [Event]{
-        let events = Homework3DataSource().events()
-        return events
     }
 }
 
