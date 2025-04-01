@@ -23,10 +23,10 @@ extension UILabel {
         guard let style = style else { return }
         
         self.font = style.font
-        
         if let lineHeight = style.lineHeight {
             let paragraphStyle = NSMutableParagraphStyle()
             paragraphStyle.lineSpacing = lineHeight - self.font.lineHeight
+            
         }
     }
 }

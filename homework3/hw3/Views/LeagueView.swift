@@ -30,13 +30,9 @@ class LeagueView: BaseView {
         
         countryLabel.font = .regularBold14
         countryLabel.textColor = .primaryBlack
-        countryLabel.numberOfLines = 0
-        countryLabel.lineBreakMode = .byWordWrapping
         
         nameLabel.font = .regularBold14
         nameLabel.textColor = .secondaryGray
-        nameLabel.numberOfLines = 0
-        nameLabel.lineBreakMode = .byWordWrapping
     }
         
     override func setupConstraints() {
@@ -51,7 +47,6 @@ class LeagueView: BaseView {
         countryLabel.snp.makeConstraints {
             $0.centerY.equalTo(logoImageView)
             $0.leading.equalTo(logoImageView.snp.trailing).offset(32)
-            $0.width.lessThanOrEqualTo(200)
         }
         
         arrowImageView.snp.makeConstraints {
@@ -65,12 +60,12 @@ class LeagueView: BaseView {
             $0.leading.equalTo(arrowImageView.snp.trailing).offset(10)
             $0.trailing.lessThanOrEqualToSuperview().offset(-16)
         }
+        
+        countryLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        countryLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
     
     func setLogoImageView(_ imageUrl: String?) {
-        guard let imageUrl = imageUrl else {
-            return
-        }
         logoImageView.setImage(from: imageUrl)
     }
     

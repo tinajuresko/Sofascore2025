@@ -10,8 +10,8 @@ import UIKit
 
 class AsyncImageView: UIImageView {
     
-    func setImage(from urlString: String) {
-        guard let url = URL(string: urlString) else {
+    func setImage(from urlString: String?) {
+        guard let urlString = urlString, let url = URL(string: urlString) else {
             return
         }
         URLSession.shared.dataTask(with: url) { data, response, error in

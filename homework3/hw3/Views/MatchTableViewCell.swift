@@ -16,9 +16,9 @@ class MatchTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(matchView)
-        
+        self.backgroundColor = .clear
         matchView.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(8)
+            $0.edges.equalToSuperview()
             $0.height.equalTo(56)
         }
     }

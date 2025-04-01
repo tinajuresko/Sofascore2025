@@ -52,13 +52,9 @@ class MatchView: BaseView {
         
         homeTeamLabel.setStyle(.regular14)
         homeTeamLabel.textColor = .secondaryGray
-        homeTeamLabel.numberOfLines = 0
-        homeTeamLabel.lineBreakMode = .byWordWrapping
         
         awayTeamLabel.setStyle(.regular14)
         awayTeamLabel.textColor = .primaryBlack
-        awayTeamLabel.numberOfLines = 0
-        awayTeamLabel.lineBreakMode = .byWordWrapping
         
         homeScoreLabel.setStyle(.regular14)
         homeScoreLabel.textAlignment = .right
@@ -104,6 +100,7 @@ class MatchView: BaseView {
             $0.centerY.equalTo(homeTeamLogoImageView)
             $0.trailing.equalToSuperview().offset(-16)
             $0.leading.greaterThanOrEqualTo(homeTeamLogoImageView.snp.trailing).offset(8)
+            $0.width.equalTo(32)
         }
             
         awayTeamLogoImageView.snp.makeConstraints {
@@ -122,6 +119,7 @@ class MatchView: BaseView {
             $0.centerY.equalTo(awayTeamLogoImageView)
             $0.trailing.equalToSuperview().offset(-16)
             $0.leading.greaterThanOrEqualTo(awayTeamLogoImageView.snp.trailing).offset(8)
+            $0.width.equalTo(32)
         }
     }
         
@@ -132,19 +130,13 @@ class MatchView: BaseView {
         timeStatusLabel.text = viewModel.timeStatusText
         timeStatusLabel.textColor = viewModel.timeStatusColor
         
-        guard let homeTeamLogo = viewModel.homeTeamLogo else {
-            return
-        }
-        homeTeamLogoImageView.setImage(from: homeTeamLogo)
+        homeTeamLogoImageView.setImage(from: viewModel.homeTeamLogo)
         
         homeTeamLabel.text = viewModel.homeTeamName
         homeScoreLabel.text = viewModel.homeScore
         homeScoreLabel.textColor = viewModel.homeScoreColor
         
-        guard let awayTeamLogo = viewModel.awayTeamLogo else {
-            return
-        }
-        awayTeamLogoImageView.setImage(from: awayTeamLogo)
+        awayTeamLogoImageView.setImage(from: viewModel.awayTeamLogo)
             
         awayTeamLabel.text = viewModel.awayTeamName
         awayScoreLabel.text = viewModel.awayScore

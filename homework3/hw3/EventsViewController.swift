@@ -6,15 +6,18 @@ class EventsViewController: UIViewController, BaseViewProtocol {
     private let topBackgroundView = UIView()
     private let menuView = MenuView()
     private let matchesTableView: UITableView = .init()
-    var sections: [LeagueSection] = []
     private var eventsViewModel = EventsViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        sections = eventsViewModel.loadSections()
         addViews()
         setupConstraints()
         styleViews()
+        
+        Task {
+            await eventsViewModel.loadSections()
+            matchesTableView.reloadData()
+        }
     }
     
     func addViews() {
@@ -33,11 +36,9 @@ class EventsViewController: UIViewController, BaseViewProtocol {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             $0.leading.trailing.equalToSuperview()
         }
-        
-        setupTableView(matchesTableView: matchesTableView)
-        
+                
         matchesTableView.snp.makeConstraints {
-            $0.top.equalTo(menuView.snp.bottom).offset(16)
+            $0.top.equalTo(menuView.snp.bottom)
             $0.leading.trailing.equalTo(view)
             $0.bottom.equalTo(view.safeAreaLayoutGuide)
         }
@@ -46,8 +47,10 @@ class EventsViewController: UIViewController, BaseViewProtocol {
     func styleViews() {
         view.backgroundColor = .appBackground
         matchesTableView.separatorStyle = .none
+        matchesTableView.backgroundColor = .clear
         topBackgroundView.backgroundColor = .headerBackground
         setTableViewDelegates()
+        setupTableView(matchesTableView: matchesTableView)
     }
     
     func setTableViewDelegates() {
@@ -63,18 +66,18 @@ class EventsViewController: UIViewController, BaseViewProtocol {
 
 extension EventsViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return sections.count
+        return eventsViewModel.sections.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return sections[section].matches.count
+        return eventsViewModel.sections[section].matches.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "MatchCell", for: indexPath) as? MatchTableViewCell else {
             return UITableViewCell()
         }
-        let match = sections[indexPath.section].matches[indexPath.row]
+        let match = eventsViewModel.sections[indexPath.section].matches[indexPath.row]
         let viewModel = MatchViewModel(event: match)
         cell.configure(with: viewModel)
         return cell
@@ -82,7 +85,7 @@ extension EventsViewController: UITableViewDelegate, UITableViewDataSource {
         
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "LeagueHeader") as! LeagueHeaderView
-        let league = sections[section].league
+        let league = eventsViewModel.sections[section].league
         header.configure(with: league)
         return header
     }

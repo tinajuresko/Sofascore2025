@@ -10,12 +10,11 @@ import UIKit
 import SofaAcademic
 import SnapKit
 
-struct EventsViewModel {
+class EventsViewModel {
     var sections: [LeagueSection] = []
-    mutating func loadSections() -> [LeagueSection] {
+    func loadSections() async {
         let events = Homework3DataSource().events()
         sections = getLeagueSections(for: events)
-        return sections
     }
     
     func getLeagueSections(for events: [Event]) -> [LeagueSection] {
