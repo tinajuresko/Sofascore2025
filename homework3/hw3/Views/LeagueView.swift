@@ -14,9 +14,9 @@ class LeagueView: BaseView {
     
     private let countryLabel = UILabel()
     private let nameLabel = UILabel()
-    private let logoImageView = UIImageView()
+    private let logoImageView = AsyncImageView()
     private let arrowImageView = UIImageView()
-    
+        
     override func addViews() {
         super.addViews()
         addSubview(logoImageView)
@@ -26,20 +26,13 @@ class LeagueView: BaseView {
     }
 
     override func styleViews() {
-        logoImageView.image = UIImage(named: "LaLiga")
         arrowImageView.image = UIImage(named: "Vector")
-        logoImageView.contentMode = .scaleAspectFit
-        arrowImageView.contentMode = .scaleAspectFit
         
-        countryLabel.font = UIFont.regularBold14
-        countryLabel.textColor = AppStyles.Colors.primary
-        countryLabel.numberOfLines = 0
-        countryLabel.lineBreakMode = .byWordWrapping
+        countryLabel.font = .regularBold14
+        countryLabel.textColor = .primaryBlack
         
-        nameLabel.font = UIFont.regularBold14
-        nameLabel.textColor = AppStyles.Colors.secondary
-        nameLabel.numberOfLines = 0
-        nameLabel.lineBreakMode = .byWordWrapping
+        nameLabel.font = .regularBold14
+        nameLabel.textColor = .secondaryGray
     }
         
     override func setupConstraints() {
@@ -59,22 +52,28 @@ class LeagueView: BaseView {
         arrowImageView.snp.makeConstraints {
             $0.centerY.equalTo(countryLabel)
             $0.leading.equalTo(countryLabel.snp.trailing).offset(10)
-            $0.height.equalTo(5)
-            $0.width.equalTo(10)
+            $0.size.equalTo(10)
         }
         
         nameLabel.snp.makeConstraints {
             $0.centerY.equalTo(arrowImageView)
             $0.leading.equalTo(arrowImageView.snp.trailing).offset(10)
-            $0.trailing.equalToSuperview().offset(-16)
+            $0.trailing.lessThanOrEqualToSuperview().offset(-16)
         }
-    }
-    func countryLabel(_ text: String) {
-        countryLabel.text = text
+        
+        countryLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        countryLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
     
-    func nameLabel(_ name: String) {
-        nameLabel.text = name
+    func setLogoImageView(_ imageUrl: String?) {
+        logoImageView.setImage(from: imageUrl)
+    }
+    
+    func setCountryLabel(_ countryName: String?) {
+        countryLabel.text = countryName
+    }
+    
+    func setNameLabel(_ leagueName: String) {
+        nameLabel.text = leagueName
     }
 }
-

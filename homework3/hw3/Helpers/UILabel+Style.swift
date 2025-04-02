@@ -1,6 +1,6 @@
 //
 //  UILabel+Style.swift
-//  hw2
+//  hw3
 //
 //  Created by Tina Jureško on 21.03.2025..
 //
@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-public class LabelStyle {
+struct LabelStyle {
     public let font: UIFont
     public let lineHeight: CGFloat?
 
@@ -23,13 +23,10 @@ extension UILabel {
         guard let style = style else { return }
         
         self.font = style.font
-        
         if let lineHeight = style.lineHeight {
             let paragraphStyle = NSMutableParagraphStyle()
             paragraphStyle.lineSpacing = lineHeight - self.font.lineHeight
-            let attributedString = NSMutableAttributedString(string: self.text ?? "")
-            attributedString.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSRange(location: 0, length: attributedString.length))
-            self.attributedText = attributedString
+            
         }
     }
 }

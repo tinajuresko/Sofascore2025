@@ -15,8 +15,8 @@ class MatchView: BaseView {
     private let timeLabel = UILabel()
     private let timeStatusLabel = UILabel()
     private let dividerView = UIView()
-    private let homeTeamLogoImageView = UIImageView()
-    private let awayTeamLogoImageView = UIImageView()
+    private let homeTeamLogoImageView = AsyncImageView()
+    private let awayTeamLogoImageView = AsyncImageView()
     private let homeTeamLabel = UILabel()
     private let awayTeamLabel = UILabel()
     private let homeScoreLabel = UILabel()
@@ -40,30 +40,25 @@ class MatchView: BaseView {
     
     override func styleViews() {
         timeLabel.setStyle(.regular14)
-        timeLabel.textColor = AppStyles.Colors.secondary
+        timeLabel.textColor = .secondaryGray
         timeStatusLabel.setStyle(.regular14)
         timeLabel.textAlignment = .center
         timeStatusLabel.textAlignment = .center
         
-        dividerView.backgroundColor = AppStyles.Colors.dividerColor
+        dividerView.backgroundColor = .divider
         
         homeTeamLogoImageView.contentMode = .scaleAspectFit
         awayTeamLogoImageView.contentMode = .scaleAspectFit
         
         homeTeamLabel.setStyle(.regular14)
-        homeTeamLabel.textColor = AppStyles.Colors.secondary
-        homeTeamLabel.numberOfLines = 0
-        homeTeamLabel.lineBreakMode = .byWordWrapping
+        homeTeamLabel.textColor = .secondaryGray
         
         awayTeamLabel.setStyle(.regular14)
-        awayTeamLabel.textColor = AppStyles.Colors.primary
-        awayTeamLabel.numberOfLines = 0
-        awayTeamLabel.lineBreakMode = .byWordWrapping
+        awayTeamLabel.textColor = .primaryBlack
         
         homeScoreLabel.setStyle(.regular14)
         homeScoreLabel.textAlignment = .right
-
-        awayScoreLabel.setStyle(.regular14) 
+        awayScoreLabel.setStyle(.regular14)
         awayScoreLabel.textAlignment = .right
         
     }
@@ -75,13 +70,11 @@ class MatchView: BaseView {
             $0.leading.equalToSuperview().offset(4)
             $0.top.equalToSuperview().offset(10)
             $0.width.equalTo(56)
-            $0.height.equalTo(16)
         }
             
         timeStatusLabel.snp.makeConstraints {
             $0.centerX.equalTo(timeLabel)
             $0.top.equalTo(timeLabel.snp.bottom).offset(4)
-            $0.height.equalTo(16)
             $0.leading.equalToSuperview().inset(16)
         }
             
@@ -101,18 +94,15 @@ class MatchView: BaseView {
             $0.centerY.equalTo(homeTeamLogoImageView)
             $0.leading.equalTo(homeTeamLogoImageView.snp.trailing).offset(8)
             $0.trailing.equalTo(homeScoreLabel.snp.leading).offset(-8)
-            $0.height.equalTo(16)
         }
-        
+            
         homeScoreLabel.snp.makeConstraints {
             $0.centerY.equalTo(homeTeamLogoImageView)
             $0.trailing.equalToSuperview().offset(-16)
             $0.leading.greaterThanOrEqualTo(homeTeamLogoImageView.snp.trailing).offset(8)
-            $0.height.equalTo(16)
+            $0.width.equalTo(32)
         }
-        homeScoreLabel.adjustsFontSizeToFitWidth = true
-        homeScoreLabel.minimumScaleFactor = 0.5
-        
+            
         awayTeamLogoImageView.snp.makeConstraints {
             $0.top.equalTo(homeTeamLogoImageView.snp.bottom).offset(4)
             $0.leading.equalTo(dividerView.snp.trailing).offset(16)
@@ -123,17 +113,14 @@ class MatchView: BaseView {
             $0.centerY.equalTo(awayTeamLogoImageView)
             $0.leading.equalTo(awayTeamLogoImageView.snp.trailing).offset(8)
             $0.trailing.equalTo(awayScoreLabel.snp.leading).offset(-8)
-            $0.height.equalTo(16)
         }
                 
         awayScoreLabel.snp.makeConstraints {
             $0.centerY.equalTo(awayTeamLogoImageView)
             $0.trailing.equalToSuperview().offset(-16)
             $0.leading.greaterThanOrEqualTo(awayTeamLogoImageView.snp.trailing).offset(8)
-            $0.height.equalTo(16)
+            $0.width.equalTo(32)
         }
-        awayScoreLabel.adjustsFontSizeToFitWidth = true
-        awayScoreLabel.minimumScaleFactor = 0.5
     }
         
     func configure(with viewModel: MatchViewModel) {
@@ -143,13 +130,13 @@ class MatchView: BaseView {
         timeStatusLabel.text = viewModel.timeStatusText
         timeStatusLabel.textColor = viewModel.timeStatusColor
         
-        homeTeamLogoImageView.image = viewModel.homeTeamLogo
+        homeTeamLogoImageView.setImage(from: viewModel.homeTeamLogo)
         
         homeTeamLabel.text = viewModel.homeTeamName
         homeScoreLabel.text = viewModel.homeScore
         homeScoreLabel.textColor = viewModel.homeScoreColor
         
-        awayTeamLogoImageView.image = viewModel.awayTeamLogo
+        awayTeamLogoImageView.setImage(from: viewModel.awayTeamLogo)
             
         awayTeamLabel.text = viewModel.awayTeamName
         awayScoreLabel.text = viewModel.awayScore
