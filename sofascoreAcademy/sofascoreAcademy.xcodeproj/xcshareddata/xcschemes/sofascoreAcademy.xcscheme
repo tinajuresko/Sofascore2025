@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "26B8E2022D8464ED0042D2C1"
-               BuildableName = "hw3.app"
-               BlueprintName = "hw3"
-               ReferencedContainer = "container:hw3.xcodeproj">
+               BuildableName = "sofascoreAcademy.app"
+               BlueprintName = "sofascoreAcademy"
+               ReferencedContainer = "container:sofascoreAcademy.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "26B8E2022D8464ED0042D2C1"
-            BuildableName = "hw3.app"
-            BlueprintName = "hw3"
-            ReferencedContainer = "container:hw3.xcodeproj">
+            BuildableName = "sofascoreAcademy.app"
+            BlueprintName = "sofascoreAcademy"
+            ReferencedContainer = "container:sofascoreAcademy.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -62,9 +62,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "26B8E2022D8464ED0042D2C1"
-            BuildableName = "hw3.app"
-            BlueprintName = "hw3"
-            ReferencedContainer = "container:hw3.xcodeproj">
+            BuildableName = "sofascoreAcademy.app"
+            BlueprintName = "sofascoreAcademy"
+            ReferencedContainer = "container:sofascoreAcademy.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

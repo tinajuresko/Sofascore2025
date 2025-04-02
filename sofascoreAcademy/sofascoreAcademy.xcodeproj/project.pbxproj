@@ -12,26 +12,26 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		26B8E2032D8464ED0042D2C1 /* hw3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = hw3.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		26B8E2032D8464ED0042D2C1 /* sofascoreAcademy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = sofascoreAcademy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		26B8E32E2D8AF0430042D2C1 /* Exceptions for "hw3" folder in "hw3" target */ = {
+		26B8E32E2D8AF0430042D2C1 /* Exceptions for "sofascoreAcademy" folder in "sofascoreAcademy" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 26B8E2022D8464ED0042D2C1 /* hw3 */;
+			target = 26B8E2022D8464ED0042D2C1 /* sofascoreAcademy */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		26B8E2052D8464ED0042D2C1 /* hw3 */ = {
+		26B8E2052D8464ED0042D2C1 /* sofascoreAcademy */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				26B8E32E2D8AF0430042D2C1 /* Exceptions for "hw3" folder in "hw3" target */,
+				26B8E32E2D8AF0430042D2C1 /* Exceptions for "sofascoreAcademy" folder in "sofascoreAcademy" target */,
 			);
-			path = hw3;
+			path = sofascoreAcademy;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -52,7 +52,7 @@
 		26B8E1FA2D8464ED0042D2C1 = {
 			isa = PBXGroup;
 			children = (
-				26B8E2052D8464ED0042D2C1 /* hw3 */,
+				26B8E2052D8464ED0042D2C1 /* sofascoreAcademy */,
 				26B8E2042D8464ED0042D2C1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -60,7 +60,7 @@
 		26B8E2042D8464ED0042D2C1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				26B8E2032D8464ED0042D2C1 /* hw3.app */,
+				26B8E2032D8464ED0042D2C1 /* sofascoreAcademy.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -68,9 +68,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		26B8E2022D8464ED0042D2C1 /* hw3 */ = {
+		26B8E2022D8464ED0042D2C1 /* sofascoreAcademy */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 26B8E2162D8464F00042D2C1 /* Build configuration list for PBXNativeTarget "hw3" */;
+			buildConfigurationList = 26B8E2162D8464F00042D2C1 /* Build configuration list for PBXNativeTarget "sofascoreAcademy" */;
 			buildPhases = (
 				26B8E1FF2D8464ED0042D2C1 /* Sources */,
 				26B8E2002D8464ED0042D2C1 /* Frameworks */,
@@ -81,15 +81,15 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				26B8E2052D8464ED0042D2C1 /* hw3 */,
+				26B8E2052D8464ED0042D2C1 /* sofascoreAcademy */,
 			);
-			name = hw3;
+			name = sofascoreAcademy;
 			packageProductDependencies = (
 				26B8E21C2D84658B0042D2C1 /* SnapKit */,
 				26B8E3302D8B04E90042D2C1 /* SofaAcademic */,
 			);
 			productName = hw2;
-			productReference = 26B8E2032D8464ED0042D2C1 /* hw3.app */;
+			productReference = 26B8E2032D8464ED0042D2C1 /* sofascoreAcademy.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -107,7 +107,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 26B8E1FE2D8464ED0042D2C1 /* Build configuration list for PBXProject "hw3" */;
+			buildConfigurationList = 26B8E1FE2D8464ED0042D2C1 /* Build configuration list for PBXProject "sofascoreAcademy" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -125,7 +125,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				26B8E2022D8464ED0042D2C1 /* hw3 */,
+				26B8E2022D8464ED0042D2C1 /* sofascoreAcademy */,
 			);
 		};
 /* End PBXProject section */
@@ -160,7 +160,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3ZVWXGRC69;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = hw3/Info.plist;
+				INFOPLIST_FILE = sofascoreAcademy/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -170,7 +170,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Tina.hw3;
+				PRODUCT_BUNDLE_IDENTIFIER = Tina.sofascoreAcademy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -187,7 +187,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3ZVWXGRC69;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = hw3/Info.plist;
+				INFOPLIST_FILE = sofascoreAcademy/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -197,7 +197,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Tina.hw3;
+				PRODUCT_BUNDLE_IDENTIFIER = Tina.sofascoreAcademy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -327,7 +327,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		26B8E1FE2D8464ED0042D2C1 /* Build configuration list for PBXProject "hw3" */ = {
+		26B8E1FE2D8464ED0042D2C1 /* Build configuration list for PBXProject "sofascoreAcademy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				26B8E2192D8464F00042D2C1 /* Debug */,
@@ -336,7 +336,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		26B8E2162D8464F00042D2C1 /* Build configuration list for PBXNativeTarget "hw3" */ = {
+		26B8E2162D8464F00042D2C1 /* Build configuration list for PBXNativeTarget "sofascoreAcademy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				26B8E2172D8464F00042D2C1 /* Debug */,
