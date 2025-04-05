@@ -61,8 +61,14 @@ class LeagueView: BaseView {
             $0.trailing.lessThanOrEqualToSuperview().offset(-16)
         }
         
+        nameLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        nameLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+
         countryLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         countryLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
+        nameLabel.widthAnchor.constraint(lessThanOrEqualTo: countryLabel.widthAnchor, multiplier: 2).isActive = true
+
     }
     
     func setLogoImageView(_ imageUrl: String?) {

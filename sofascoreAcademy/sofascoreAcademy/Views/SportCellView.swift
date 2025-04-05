@@ -37,6 +37,7 @@ class SportCellView: BaseView {
             $0.top.equalTo(sportIconImageView.snp.bottom).offset(4)
             $0.bottom.equalToSuperview()
         }
+        sportNameLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
     }
     
     func configure(with sport: SportType) {

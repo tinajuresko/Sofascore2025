@@ -11,17 +11,19 @@ import SofaAcademic
 import SnapKit
 
 
-struct MenuViewModel {
-    var selectedSport: SportType
+class MenuViewModel {
+    static let shared = MenuViewModel(selectedSport: .football) 
+    
+    private(set) var selectedSport: SportType
     var onSportSelectionChanged: ((SportType) -> Void)?
     
-    init(selectedSport: SportType) {
+    private init(selectedSport: SportType) {
         self.selectedSport = selectedSport
     }
     
-    mutating func selectSport(_ sport: SportType) {
+    func selectSport(_ sport: SportType) {
         self.selectedSport = sport
-        
         onSportSelectionChanged?(sport)
     }
 }
+

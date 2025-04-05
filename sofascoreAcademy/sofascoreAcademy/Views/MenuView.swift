@@ -12,12 +12,11 @@ import SnapKit
 
 class MenuView: BaseView {
     let tabMenuView: SportCellView? = SportCellView()
-    private var viewModel = MenuViewModel(selectedSport: .football)
-    private let sportsStackView: UIStackView
+    private var viewModel = MenuViewModel.shared
+    private let sportsStackView: UIStackView = UIStackView()
     private let selectorLine = UIView()
     
     override init() {
-        self.sportsStackView = UIStackView()
         super.init()
     }
     

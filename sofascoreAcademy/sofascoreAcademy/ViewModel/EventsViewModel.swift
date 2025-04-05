@@ -7,14 +7,17 @@
 
 import Foundation
 import UIKit
-import SofaAcademic
 import SnapKit
 
 class EventsViewModel {
     var sections: [LeagueSection] = []
     func loadSections() async {
-        let events = Homework3DataSource().events()
-        sections = getLeagueSections(for: events)
+        do {
+            let events = try await APIClient.getEvents(sport: MenuViewModel.shared.selectedSport.urlQuery)
+            sections = getLeagueSections(for: events)
+        } catch {
+            print("Error loading events: \(error)")
+        }
     }
     
     func getLeagueSections(for events: [Event]) -> [LeagueSection] {

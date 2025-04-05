@@ -7,7 +7,6 @@
 
 import Foundation
 import UIKit
-import SofaAcademic
 import SnapKit
 
 struct MatchViewModel {
@@ -26,22 +25,22 @@ struct MatchViewModel {
     
     var timeStatusText: String {
         switch event.status {
-        case .notStarted:
+        case .NOT_STARTED:
             return "-"
-        case .inProgress:
+        case .IN_PROGRESS:
             let currentTime = Int(Date().timeIntervalSince1970)
             let elapsedMinutes = (currentTime - event.startTimestamp) / 60
             return "\(elapsedMinutes)'"
-        case .finished:
+        case .FINISHED:
             return "FT"
-        case .halftime:
+        case .HALF_TIME:
             return "HT"
         }
     }
     
     var timeStatusColor: UIColor {
         switch event.status {
-        case .inProgress:
+        case .IN_PROGRESS:
             return .red
         default:
             return .secondaryGray
@@ -66,23 +65,23 @@ struct MatchViewModel {
     
     var homeScore: String {
         guard let score = event.homeScore else {
-            return event.status == .notStarted ? "" : "—"
+            return event.status == .NOT_STARTED ? "" : "—"
         }
         return "\(score)"
     }
     
     var awayScore: String {
         guard let score = event.awayScore else {
-            return event.status == .notStarted ? "" : "—"
+            return event.status == .NOT_STARTED ? "" : "—"
         }
         return "\(score)"
     }
     
     var homeScoreColor: UIColor {
         switch event.status {
-        case .inProgress, .halftime:
+        case .IN_PROGRESS, .HALF_TIME:
             return UIColor.red
-        case .finished:
+        case .FINISHED:
             return .secondaryGray
         default:
             return .clear
@@ -91,12 +90,78 @@ struct MatchViewModel {
     
     var awayScoreColor: UIColor {
         switch event.status {
-        case .inProgress, .halftime:
+        case .IN_PROGRESS, .HALF_TIME:
             return UIColor.red
-        case .finished:
+        case .FINISHED:
             return .primaryBlack
         default:
             return .clear
         }
+    }
+    
+    var league: League? {
+        return event.league
+    }
+    
+    var eventDetailsText: String? {
+        switch event.status {
+        case .NOT_STARTED:
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "dd.MM.yyyy"
+            let eventDate = Date(timeIntervalSince1970: TimeInterval(event.startTimestamp))
+            let formattedDate = dateFormatter.string(from: eventDate)
+            return formattedDate
+        default:
+            return nil
+        }
+    }
+    
+    var eventDetailsStatusText: String {
+        switch event.status {
+        case .NOT_STARTED:
+            return "\(time)"
+        case .IN_PROGRESS:
+            let currentTime = Int(Date().timeIntervalSince1970)
+            let elapsedMinutes = (currentTime - event.startTimestamp) / 60
+            return "\(elapsedMinutes)'"
+        case .HALF_TIME:
+            return "Half Time"
+        default:
+            return "Full Time"
+        }
+    }
+    
+    var eventDetailsStatusColor: UIColor {
+        switch event.status {
+        case .IN_PROGRESS, .HALF_TIME:
+            return UIColor.red
+        case .NOT_STARTED:
+            return .primaryBlack
+        default:
+            return .secondaryGray
+        }
+    }
+    
+    var scoresText: NSAttributedString {
+        let separator = " - "
+        let homeScoreAttr = NSAttributedString(
+            string: homeScore,
+            attributes: [.foregroundColor: homeScoreColor]
+        )
+        let separatorColor: UIColor = (homeScoreColor == .red && awayScoreColor == .red) ? .red : .primaryBlack
+        let separatorAttr = NSAttributedString(
+            string: separator,
+            attributes: [.foregroundColor: separatorColor]
+        )
+        let awayScoreAttr = NSAttributedString(
+            string: awayScore,
+            attributes: [.foregroundColor: awayScoreColor]
+        )
+        let combined = NSMutableAttributedString()
+        combined.append(homeScoreAttr)
+        combined.append(separatorAttr)
+        combined.append(awayScoreAttr)
+        
+        return combined
     }
 }

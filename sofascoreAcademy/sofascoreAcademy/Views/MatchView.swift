@@ -121,6 +121,11 @@ class MatchView: BaseView {
             $0.leading.greaterThanOrEqualTo(awayTeamLogoImageView.snp.trailing).offset(8)
             $0.width.equalTo(32)
         }
+        
+        awayTeamLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        homeTeamLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        timeLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        timeStatusLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
     }
         
     func configure(with viewModel: MatchViewModel) {

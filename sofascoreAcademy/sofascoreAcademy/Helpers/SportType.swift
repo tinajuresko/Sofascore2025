@@ -27,11 +27,22 @@ enum SportType: CaseIterable {
     var icon: UIImage? {
         switch self {
         case .football:
-            return .icon_football
+            return .iconFootball
         case .basketball:
-            return .icon_basketball
+            return .iconBasketball
         case .americanFootball:
-            return .icon_american_football
+            return .iconAmericanFootball
+        }
+    }
+    
+    var urlQuery: String {
+        switch self {
+        case .football:
+            return "football"
+        case .basketball:
+            return "basketball"
+        case .americanFootball:
+            return "am-football"
         }
     }
 }
