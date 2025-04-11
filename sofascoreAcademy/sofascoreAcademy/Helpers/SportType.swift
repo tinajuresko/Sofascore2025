@@ -35,7 +35,7 @@ enum SportType: CaseIterable {
         }
     }
     
-    var urlQuery: String {
+    var urlSlug: String {
         switch self {
         case .football:
             return "football"

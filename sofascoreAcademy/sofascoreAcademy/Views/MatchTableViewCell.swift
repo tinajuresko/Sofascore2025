@@ -11,13 +11,14 @@ import SofaAcademic
 import SnapKit
 
 protocol MatchTableCellDelegate: AnyObject {
-    func didTapEvent(event: MatchViewModel)
+    func didTapEvent(selectedEvent: EventDetailsViewModel)
 }
 
 class MatchTableViewCell: UITableViewCell {
     private let matchView = MatchView()
     weak var delegate: MatchTableCellDelegate?
     private var event: MatchViewModel?
+    private var selectedEvent: EventDetailsViewModel?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -34,8 +35,8 @@ class MatchTableViewCell: UITableViewCell {
     }
 
     @objc private func eventCellTapped() {
-        if let event = event {
-            delegate?.didTapEvent(event: event) 
+        if let selectedEvent = selectedEvent {
+            delegate?.didTapEvent(selectedEvent: selectedEvent)
         }
     }
     
@@ -46,6 +47,8 @@ class MatchTableViewCell: UITableViewCell {
     func configure(with viewModel: MatchViewModel) {
         self.event = viewModel
         matchView.configure(with: viewModel)
+        
+        self.selectedEvent = EventDetailsViewModel(event: viewModel.event)
     }
 }
 

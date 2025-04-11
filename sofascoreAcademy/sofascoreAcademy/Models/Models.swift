@@ -30,10 +30,26 @@ struct League: Decodable {
 }
 
 enum EventStatus: String, Decodable {
-    case NOT_STARTED
-    case IN_PROGRESS
-    case HALF_TIME
-    case FINISHED
+    case notStarted
+    case inProgress
+    case halftime
+    case finished
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self).lowercased()
+        
+        switch rawValue {
+        case "not_started":
+            self = .notStarted
+        case "in_progress":
+            self = .inProgress
+        case "halftime":
+            self = .halftime
+        default:
+            self = .finished
+        }
+    }
 }
 
 struct Event: Decodable {

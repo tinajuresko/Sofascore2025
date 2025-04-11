@@ -11,13 +11,12 @@ import SofaAcademic
 import SnapKit
 
 class EventDetailsViewController: UIViewController, BaseViewProtocol {
-    private let event: MatchViewModel
-    private let eventDetailsView = EventDetailsView()
-    private let leagueLogoImageView = AsyncImageView()
+    private let selectedEvent: EventDetailsViewModel
+    private let headerView = EventDetailsHeaderView()
     private let customTitleView = CustomNavigationTitleView()
     
-    init(event: MatchViewModel){
-        self.event = event
+    init(selectedEvent: EventDetailsViewModel){
+        self.selectedEvent = selectedEvent
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -31,24 +30,42 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol {
         setupConstraints()
         styleViews()
         setupNavigationBar()
-        eventDetailsView.configure(with: event)
+        headerView.configure(with: selectedEvent)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: false)
     }
     
     func setupNavigationBar() {
-        guard let league = event.league else {
+        guard let league = selectedEvent.league else {
             return
         }
         customTitleView.configure(with: league, selectedSport: MenuViewModel.shared.selectedSport)
-        self.navigationItem.titleView = customTitleView
+        customTitleView.onBackTapped = { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
+        }
     }
     
     func addViews() {
-        view.addSubview(eventDetailsView)
+        view.addSubview(headerView)
+        view.addSubview(customTitleView)
     }
     
     func setupConstraints() {
-        eventDetailsView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(20)
+        customTitleView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.leading.trailing.equalToSuperview().inset(20)
+        }
+        
+        headerView.snp.makeConstraints {
+            $0.top.equalTo(customTitleView.snp.bottom).offset(20)
             $0.leading.trailing.equalToSuperview().inset(20)
         }
     }

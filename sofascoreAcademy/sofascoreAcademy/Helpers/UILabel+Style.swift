@@ -34,4 +34,5 @@ extension UILabel {
 extension LabelStyle {
     static let regular14 = LabelStyle(font: UIFont.regular14, lineHeight: 16)
     static let regularBold14 = LabelStyle(font: UIFont.regularBold14, lineHeight: 16)
+    static let headlineBold32 = LabelStyle(font: UIFont.headlineBold32, lineHeight: 32)
 }

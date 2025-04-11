@@ -1,20 +1,22 @@
 import UIKit
 import SofaAcademic
 import SnapKit
+import Combine
 
 class EventsViewController: UIViewController, BaseViewProtocol {
     private let topBackgroundView = UIView()
     private let menuView = MenuView()
-    private let matchesTableView: UITableView = .init()
     private var eventsViewModel = EventsViewModel()
-    private let headerView = HeaderView()
+    private let eventsHeaderView = EventsHeaderView()
     private let activityIndicator = UIActivityIndicatorView(style: .medium)
     private let errorLabel = UILabel()
+    private let matchesTableView: UITableView = .init()
+    private var cancellables = Set<AnyCancellable>()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        headerView.delegate = self
+        eventsHeaderView.delegate = self
         addViews()
         setupConstraints()
         styleViews()
@@ -23,17 +25,45 @@ class EventsViewController: UIViewController, BaseViewProtocol {
         MenuViewModel.shared.onSportSelectionChanged = { [weak self] selectedSport in
             self?.handleSportSelectionChanged()
         }
-        activityIndicator.startAnimating()
-        Task {
-            await eventsViewModel.loadSections()
-            if eventsViewModel.sections.isEmpty {
-                self.showError("No data available.")
-            } else {
-                self.hideError()
+        observeEventsViewModel()
+    }
+    
+    private func observeEventsViewModel () {
+        eventsViewModel.$state
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] state in
+                self?.handleState(state)
             }
-            matchesTableView.reloadData()
-            activityIndicator.stopAnimating()
+            .store(in: &cancellables)
+    }
+    
+    private func handleState(_ state: EventsViewModel.State) {
+        switch state {
+        case .loading:
+            showLoadingState()
+        case .loaded(_):
+            showLoadedState()
+        case .error:
+            showErrorState()
+        default:
+            break
         }
+    }
+    
+    func showLoadingState() {
+        activityIndicator.startAnimating()
+        hideError()
+    }
+    
+    func showLoadedState() {
+        activityIndicator.stopAnimating()
+        hideError()
+        matchesTableView.reloadData()
+    }
+    
+    func showErrorState() {
+        activityIndicator.stopAnimating()
+        showError("No data available.")
     }
     
     func showError(_ message: String) {
@@ -46,23 +76,25 @@ class EventsViewController: UIViewController, BaseViewProtocol {
     }
     
     func handleSportSelectionChanged() {
-        activityIndicator.startAnimating()
+        self.eventsViewModel.sections = []
+        self.matchesTableView.reloadData()
+        menuView.updateSelectorPosition(for: MenuViewModel.shared.selectedSport)
         Task {
             await eventsViewModel.loadSections()
-            if eventsViewModel.sections.isEmpty {
-                self.showError("No data available.")
-            } else {
-                self.hideError()
-            }
-            matchesTableView.reloadData()
-            activityIndicator.stopAnimating()
-            menuView.updateSelectorPosition(for: MenuViewModel.shared.selectedSport)
         }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: true)
+        switch eventsViewModel.state {
+        case .idle:
+            Task {
+                await eventsViewModel.loadSections()
+            }
+        default:
+            break
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -73,7 +105,7 @@ class EventsViewController: UIViewController, BaseViewProtocol {
     func addViews() {
         view.addSubview(topBackgroundView)
         view.addSubview(menuView)
-        view.addSubview(headerView)
+        view.addSubview(eventsHeaderView)
         view.addSubview(matchesTableView)
         view.addSubview(errorLabel)
         view.addSubview(activityIndicator)
@@ -85,12 +117,12 @@ class EventsViewController: UIViewController, BaseViewProtocol {
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.top)
         }
         
-        headerView.snp.makeConstraints {
+        eventsHeaderView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             $0.leading.trailing.equalToSuperview()
         }
         menuView.snp.makeConstraints {
-            $0.top.equalTo(headerView.snp.bottom)
+            $0.top.equalTo(eventsHeaderView.snp.bottom)
             $0.leading.trailing.equalToSuperview()
         }
                 
@@ -134,18 +166,23 @@ class EventsViewController: UIViewController, BaseViewProtocol {
     }
 }
 
-extension EventsViewController: HeaderViewDelegate, MatchTableCellDelegate {
+// MARK: - EventsHeaderViewDelegate
+extension EventsViewController: EventsHeaderViewDelegate {
     func didTapSettingsButton() {
         let settingsVC = SettingsViewController()
         navigationController?.pushViewController(settingsVC, animated: true)
     }
-    
-    func didTapEvent(event: MatchViewModel) {
-        let eventDetailsVC = EventDetailsViewController(event: event)
+}
+
+// MARK: - MatchTableCellDelegate
+extension EventsViewController: MatchTableCellDelegate {
+    func didTapEvent(selectedEvent: EventDetailsViewModel) {
+        let eventDetailsVC = EventDetailsViewController(selectedEvent: selectedEvent)
         navigationController?.pushViewController(eventDetailsVC, animated: true)
     }
 }
 
+// MARK: - UITableViewDelegate, UITableViewDataSource
 extension EventsViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return eventsViewModel.sections.count
@@ -169,7 +206,7 @@ extension EventsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "LeagueHeader") as? LeagueHeaderView
         else {
-            return UIView()
+            return nil
         }
         let league = eventsViewModel.sections[section].league
         header.configure(with: league)

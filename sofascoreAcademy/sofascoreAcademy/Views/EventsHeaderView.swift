@@ -10,15 +10,15 @@ import UIKit
 import SofaAcademic
 import SnapKit
 
-protocol HeaderViewDelegate: AnyObject {
+protocol EventsHeaderViewDelegate: AnyObject {
     func didTapSettingsButton()
 }
 
-class HeaderView: BaseView {
+class EventsHeaderView: BaseView {
     private let sofascoreLogoImageView = UIImageView()
     private let settingsIconImageView = UIImageView()
     private let trophyIconImageView = UIImageView()
-    weak var delegate: HeaderViewDelegate?
+    weak var delegate: EventsHeaderViewDelegate?
     
     override init() {
         super.init()

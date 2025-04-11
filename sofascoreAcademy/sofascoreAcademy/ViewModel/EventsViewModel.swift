@@ -9,14 +9,31 @@ import Foundation
 import UIKit
 import SnapKit
 
-class EventsViewModel {
+class EventsViewModel: ObservableObject {
+    enum State {
+        case idle
+        case loaded([LeagueSection])
+        case loading
+        case error
+    }
+    @Published private(set) var state: State = .idle
+    
     var sections: [LeagueSection] = []
     func loadSections() async {
+       
+        self.state = .loading
         do {
-            let events = try await APIClient.getEvents(sport: MenuViewModel.shared.selectedSport.urlQuery)
+            let events = try await APIClient.getEvents(sport: MenuViewModel.shared.selectedSport.urlSlug)
             sections = getLeagueSections(for: events)
+            
+            if sections.isEmpty {
+                self.state = .error
+            } else {
+                self.state = .loaded(self.sections)
+            }
+            
         } catch {
-            print("Error loading events: \(error)")
+            self.state = .error
         }
     }
     
