@@ -23,7 +23,7 @@ class EventsViewModel: ObservableObject {
        
         self.state = .loading
         do {
-            let events = try await APIClient.getEvents(sport: MenuViewModel.shared.selectedSport.urlSlug)
+            let events = try await APIClient.getEvents(sport: SportSelectionManager.shared.selectedSport.urlSlug)
             sections = getLeagueSections(for: events)
             
             if sections.isEmpty {

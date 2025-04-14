@@ -20,6 +20,11 @@ class SettingsViewController: UIViewController, BaseViewProtocol {
         styleViews()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: true)
+    }
+    
     func addViews() {
         view.addSubview(dismissButton)
     }

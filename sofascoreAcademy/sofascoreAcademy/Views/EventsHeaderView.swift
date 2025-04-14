@@ -54,13 +54,12 @@ class EventsHeaderView: BaseView {
         
         trophyIconImageView.snp.makeConstraints {
             $0.centerY.equalTo(sofascoreLogoImageView)
-            $0.leading.greaterThanOrEqualTo(sofascoreLogoImageView.snp.trailing).offset(112)
+            $0.trailing.equalTo(settingsIconImageView.snp.leading).offset(-16)
             $0.size.equalTo(24)
         }
         
         settingsIconImageView.snp.makeConstraints {
             $0.centerY.equalTo(trophyIconImageView)
-            $0.leading.equalTo(trophyIconImageView.snp.trailing).offset(12)
             $0.trailing.equalToSuperview().offset(-16)
             $0.size.equalTo(24)
         }

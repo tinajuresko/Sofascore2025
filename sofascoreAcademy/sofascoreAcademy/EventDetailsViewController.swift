@@ -47,7 +47,7 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol {
         guard let league = selectedEvent.league else {
             return
         }
-        customTitleView.configure(with: league, selectedSport: MenuViewModel.shared.selectedSport)
+        customTitleView.configure(with: league, selectedSport: SportSelectionManager.shared.selectedSport)
         customTitleView.onBackTapped = { [weak self] in
             self?.navigationController?.popViewController(animated: true)
         }

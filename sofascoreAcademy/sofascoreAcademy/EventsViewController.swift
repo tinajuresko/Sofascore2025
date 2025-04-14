@@ -22,7 +22,7 @@ class EventsViewController: UIViewController, BaseViewProtocol {
         styleViews()
         activityIndicator.center = view.center
         
-        MenuViewModel.shared.onSportSelectionChanged = { [weak self] selectedSport in
+        SportSelectionManager.shared.onSportSelectionChanged = { [weak self] selectedSport in
             self?.handleSportSelectionChanged()
         }
         observeEventsViewModel()
@@ -39,14 +39,16 @@ class EventsViewController: UIViewController, BaseViewProtocol {
     
     private func handleState(_ state: EventsViewModel.State) {
         switch state {
+        case .idle:
+            Task {
+                await eventsViewModel.loadSections()
+            }
         case .loading:
             showLoadingState()
         case .loaded(_):
             showLoadedState()
         case .error:
             showErrorState()
-        default:
-            break
         }
     }
     
@@ -78,7 +80,7 @@ class EventsViewController: UIViewController, BaseViewProtocol {
     func handleSportSelectionChanged() {
         self.eventsViewModel.sections = []
         self.matchesTableView.reloadData()
-        menuView.updateSelectorPosition(for: MenuViewModel.shared.selectedSport)
+        menuView.updateSelectorPosition(for: SportSelectionManager.shared.selectedSport)
         Task {
             await eventsViewModel.loadSections()
         }
@@ -87,19 +89,6 @@ class EventsViewController: UIViewController, BaseViewProtocol {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: true)
-        switch eventsViewModel.state {
-        case .idle:
-            Task {
-                await eventsViewModel.loadSections()
-            }
-        default:
-            break
-        }
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
     func addViews() {

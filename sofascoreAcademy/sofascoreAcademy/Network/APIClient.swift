@@ -18,7 +18,7 @@ enum APIError: Error {
 enum APIClient {
     private static let baseURL = "https://sofa-ios-academy-43194eec0621.herokuapp.com"
 
-    private static func fetch<T: Decodable>(
+    static func fetch<T: Decodable>(
         path: String,
         queryItems: [URLQueryItem] = [],
         method: String = "GET"
@@ -58,13 +58,6 @@ enum APIClient {
         } catch {
             throw APIError.decodingFailed
         }
-    }
-    
-    static func getEvents(sport: String) async throws -> [Event] {
-        return try await fetch(
-            path: "/events",
-            queryItems: [URLQueryItem(name: "sport", value: sport)]
-        )
     }
 }
 

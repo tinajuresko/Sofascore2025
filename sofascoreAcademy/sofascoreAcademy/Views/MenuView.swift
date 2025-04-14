@@ -12,7 +12,6 @@ import SnapKit
 
 class MenuView: BaseView {
     let tabMenuView: SportCellView? = SportCellView()
-    private var viewModel = MenuViewModel.shared
     private let sportsStackView: UIStackView = UIStackView()
     private let selectorLine = UIView()
     
@@ -27,7 +26,7 @@ class MenuView: BaseView {
         addSubview(sportsStackView)
         addSubview(selectorLine)
         
-        viewModel.onSportSelectionChanged = { [weak self] selectedSport in
+        SportSelectionManager.shared.onSportSelectionChanged = { [weak self] selectedSport in
             self?.updateSelectorPosition(for: selectedSport)
         }
     }
@@ -47,7 +46,7 @@ class MenuView: BaseView {
     @objc func selectSportAction(_ sender: UITapGestureRecognizer) {
         guard let view = sender.view else { return }
         let selectedSport = SportType.allCases[view.tag]
-        viewModel.selectSport(selectedSport)
+        SportSelectionManager.shared.selectSport(selectedSport)
     }
     
     func configureStackView() {

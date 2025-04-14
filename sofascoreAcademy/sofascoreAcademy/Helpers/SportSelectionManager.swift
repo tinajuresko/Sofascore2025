@@ -1,18 +1,15 @@
 //
-//  MenuViewModel.swift
-//  hw3
+//  SportSelectionManager.swift
+//  sofascoreAcademy
 //
-//  Created by Tina Jureško on 19.03.2025..
+//  Created by Tina Jureško on 14.04.2025..
 //
 
 import Foundation
-import UIKit
 import SofaAcademic
-import SnapKit
 
-
-class MenuViewModel {
-    static let shared = MenuViewModel(selectedSport: .football) 
+final class SportSelectionManager {
+    static let shared = SportSelectionManager(selectedSport: .football)
     
     private(set) var selectedSport: SportType
     var onSportSelectionChanged: ((SportType) -> Void)?
@@ -26,4 +23,3 @@ class MenuViewModel {
         onSportSelectionChanged?(sport)
     }
 }
-
