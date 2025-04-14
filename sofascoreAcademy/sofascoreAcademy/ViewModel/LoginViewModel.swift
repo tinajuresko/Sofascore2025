@@ -20,7 +20,6 @@ struct LoginViewModel {
               !safeUsername.isEmpty,
               !safePassword.isEmpty
         else {
-            //UserDefaults.standard.removeObject(forKey: "username") U LOGOUT
             onLoginResponse?("Please enter your username and password")
             return
         }

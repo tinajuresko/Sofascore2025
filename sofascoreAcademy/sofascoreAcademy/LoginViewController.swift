@@ -115,7 +115,6 @@ class LoginViewController: UIViewController, BaseViewProtocol {
         titleLabel.textAlignment = .center
         titleLabel.font = .headlineBold32
         titleLabel.numberOfLines = 2
-        titleLabel.lineBreakMode = .byTruncatingTail
         
         textLabel.text = "Hundreds of stats. Infinite love of the game."
         textLabel.backgroundColor = .clear
@@ -155,7 +154,6 @@ class LoginViewController: UIViewController, BaseViewProtocol {
         errorLabel.textAlignment = .center
         errorLabel.text = ""
         errorLabel.numberOfLines = 2
-        errorLabel.lineBreakMode = .byTruncatingTail
     }
     
     private func updateLayoutForOrientation() {

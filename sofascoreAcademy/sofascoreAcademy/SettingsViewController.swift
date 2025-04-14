@@ -23,6 +23,11 @@ class SettingsViewController: UIViewController, BaseViewProtocol {
         styleViews()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: true)
+    }
+    
     func addViews() {
         view.addSubview(dismissButton)
         view.addSubview(nameLabel)
@@ -58,7 +63,6 @@ class SettingsViewController: UIViewController, BaseViewProtocol {
         nameLabel.font = .headlineBold32
         nameLabel.textColor = .primaryBlack
         nameLabel.numberOfLines = 2
-        nameLabel.lineBreakMode = .byTruncatingTail
         
         logoutButton.setTitle("Logout", for: .normal)
         logoutButton.backgroundColor = .headerBackground
