@@ -7,21 +7,17 @@
 
 import Foundation
 import UIKit
-import SofaAcademic
 import SnapKit
 
 struct MatchViewModel {
-    private let event: Event
+    let event: Event
     
     init(event: Event) {
         self.event = event
     }
     
     var time: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "HH:mm"
-        let eventTime = Date(timeIntervalSince1970: TimeInterval(event.startTimestamp))
-        return dateFormatter.string(from: eventTime)
+        return event.startTimestamp.asDate.hourMinute
     }
     
     var timeStatusText: String {
@@ -29,8 +25,7 @@ struct MatchViewModel {
         case .notStarted:
             return "-"
         case .inProgress:
-            let currentTime = Int(Date().timeIntervalSince1970)
-            let elapsedMinutes = (currentTime - event.startTimestamp) / 60
+            let elapsedMinutes = Date().elapsedMinutes(from: event.startTimestamp.asDate)
             return "\(elapsedMinutes)'"
         case .finished:
             return "FT"
@@ -59,7 +54,7 @@ struct MatchViewModel {
     var homeTeamLogo: String? {
         return event.homeTeam.logoUrl
     }
-        
+    
     var awayTeamLogo: String? {
         return event.awayTeam.logoUrl
     }

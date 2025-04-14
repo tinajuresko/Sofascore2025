@@ -11,4 +11,5 @@ import UIKit
 extension UIFont {
     static let regular14: UIFont = UIFont(name: "Roboto-Regular", size: 14)!
     static let regularBold14: UIFont = UIFont(name: "Roboto-Bold", size: 14)!
+    static let headlineBold32: UIFont = UIFont(name: "Roboto-Bold", size: 32)!
 }

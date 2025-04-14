@@ -7,14 +7,34 @@
 
 import Foundation
 import UIKit
-import SofaAcademic
 import SnapKit
 
-class EventsViewModel {
+class EventsViewModel: ObservableObject {
+    enum State {
+        case idle
+        case loaded([LeagueSection])
+        case loading
+        case error
+    }
+    @Published private(set) var state: State = .idle
+    
     var sections: [LeagueSection] = []
     func loadSections() async {
-        let events = Homework3DataSource().events()
-        sections = getLeagueSections(for: events)
+       
+        self.state = .loading
+        do {
+            let events = try await APIClient.getEvents(sport: SportSelectionManager.shared.selectedSport.urlSlug)
+            sections = getLeagueSections(for: events)
+            
+            if sections.isEmpty {
+                self.state = .error
+            } else {
+                self.state = .loaded(self.sections)
+            }
+            
+        } catch {
+            self.state = .error
+        }
     }
     
     func getLeagueSections(for events: [Event]) -> [LeagueSection] {

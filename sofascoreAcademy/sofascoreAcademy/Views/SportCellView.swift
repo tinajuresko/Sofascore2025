@@ -35,6 +35,8 @@ class SportCellView: BaseView {
         sportNameLabel.snp.makeConstraints {
             $0.centerX.equalToSuperview()
             $0.top.equalTo(sportIconImageView.snp.bottom).offset(4)
+            $0.leading.greaterThanOrEqualToSuperview().offset(8)
+            $0.trailing.lessThanOrEqualToSuperview().offset(-8)
             $0.bottom.equalToSuperview()
         }
     }
