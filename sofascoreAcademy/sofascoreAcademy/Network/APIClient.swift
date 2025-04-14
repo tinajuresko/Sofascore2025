@@ -7,6 +7,7 @@
 
 import Foundation
 import Network
+import KeychainAccess
 
 enum APIError: Error {
     case invalidURL
@@ -21,10 +22,11 @@ enum APIClient {
     private static func fetch<T: Decodable>(
         path: String,
         queryItems: [URLQueryItem] = [],
-        method: String = "GET"
+        method: String = "GET",
+        body: Data? = nil
     ) async throws -> T {
         let url = try buildURL(path: path, queryItems: queryItems)
-        let request = buildRequest(url: url, method: method)
+        let request = buildRequest(url: url, method: method, body: body)
         let data = try await sendRequest(request)
         return try decode(data: data)
     }
@@ -38,9 +40,16 @@ enum APIClient {
         return url
     }
     
-    private static func buildRequest(url: URL, method: String) -> URLRequest {
+    private static func buildRequest(url: URL, method: String, body: Data? = nil) -> URLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = method
+        request.httpBody = body
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let keychain = Keychain(service: "com.academy")
+        if let token = keychain["token"] {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
         return request
     }
     
@@ -62,9 +71,21 @@ enum APIClient {
     
     static func getEvents(sport: String) async throws -> [Event] {
         return try await fetch(
-            path: "/events",
+            path: "/secure/events",
             queryItems: [URLQueryItem(name: "sport", value: sport)]
         )
     }
-}
+    
+    static func login(username: String, password: String) async throws -> LoginResponse {
+        let requestBody = LoginRequest(username: username, password: password)
+        let jsonData = try JSONEncoder().encode(requestBody)
 
+        let response: LoginResponse = try await fetch(
+            path: "/login",
+            method: "POST",
+            body: jsonData
+        )
+            
+        return response
+    }
+}

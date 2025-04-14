@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import GRDB
 
 struct EventsContainer: Decodable {
     public let events: [Event]
@@ -61,4 +62,50 @@ struct Event: Decodable {
     public let league: League?
     public let homeScore: Int?
     public let awayScore: Int?
+}
+
+struct LoginRequest: Codable {
+    public let username: String
+    public let password: String
+}
+
+struct LoginResponse: Codable {
+    public let name: String
+    public let token: String
+}
+
+struct DBLeague: Codable, FetchableRecord, PersistableRecord {
+    let id: Int
+    let name: String
+    let countryName: String?
+    let logoUrl: String?
+    
+    init(from league: League) {
+        self.id = league.id
+        self.name = league.name
+        self.countryName = league.country?.name
+        self.logoUrl = league.logoUrl
+    }
+}
+
+struct DBEvent: Codable, FetchableRecord, PersistableRecord {
+    let id: Int
+    let homeTeam: String
+    let awayTeam: String
+    let startTimestamp: Int
+    let status: String
+    let homeScore: Int?
+    let awayScore: Int?
+    let leagueId: Int?
+    
+    init(from event: Event) {
+        self.id = event.id
+        self.homeTeam = event.homeTeam.name
+        self.awayTeam = event.awayTeam.name
+        self.startTimestamp = event.startTimestamp
+        self.status = event.status.rawValue
+        self.homeScore = event.homeScore
+        self.awayScore = event.awayScore
+        self.leagueId = event.league?.id 
+    }
 }
