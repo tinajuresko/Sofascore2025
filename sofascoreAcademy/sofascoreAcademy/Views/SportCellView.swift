@@ -23,8 +23,6 @@ class SportCellView: BaseView {
         sportNameLabel.textAlignment = .center
         sportNameLabel.setStyle(.regular14)
         sportNameLabel.textColor = .white
-        sportNameLabel.numberOfLines = 1
-        sportNameLabel.lineBreakMode = .byTruncatingTail
         sportIconImageView.contentMode = .scaleAspectFit
     }
     

@@ -44,19 +44,15 @@ class EventDetailsHeaderView: BaseView {
         homeTeamLabel.textAlignment = .center
         awayTeamLabel.textAlignment = .center
         homeTeamLabel.numberOfLines = 2
-        homeTeamLabel.lineBreakMode = .byTruncatingTail
         awayTeamLabel.numberOfLines = 2
-        awayTeamLabel.lineBreakMode = .byTruncatingTail
             
         eventDetailLabel.font = .regular14
         eventDetailLabel.textAlignment = .center
         eventDetailLabel.numberOfLines = 2
-        eventDetailLabel.lineBreakMode = .byTruncatingTail
             
         eventStatusLabel.font = .regular14
         eventStatusLabel.textAlignment = .center
         eventStatusLabel.numberOfLines = 2
-        eventStatusLabel.lineBreakMode = .byTruncatingTail
             
         resultsView.backgroundColor = .containerBackground
         resultsView.layer.cornerRadius = 6
