@@ -38,11 +38,6 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol {
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: false)
-    }
-    
     func setupNavigationBar() {
         guard let league = selectedEvent.league else {
             return

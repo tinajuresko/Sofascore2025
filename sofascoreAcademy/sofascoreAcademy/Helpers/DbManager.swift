@@ -33,15 +33,15 @@ final class DbManager {
         
         do {
             try dbQueue.write { db in
-                try db.create(table: "DBLeague", ifNotExists: true) { t in
-                    t.column("id", .integer).primaryKey()
+                try db.create(table: "DBLeague", body: { t in
+                    t.primaryKey("id", .integer)
                     t.column("name", .text).notNull()
                     t.column("countryName", .text)
                     t.column("logoUrl", .text)
-                }
+                })
                 
-                try db.create(table: "DBEvent", ifNotExists: true) { t in
-                    t.column("id", .integer).primaryKey()
+                try db.create(table: "DBEvent", body: { t in
+                    t.primaryKey("id", .integer)
                     t.column("homeTeam", .text).notNull()
                     t.column("awayTeam", .text).notNull()
                     t.column("startTimestamp", .integer).notNull()
@@ -49,7 +49,7 @@ final class DbManager {
                     t.column("homeScore", .integer)
                     t.column("awayScore", .integer)
                     t.column("leagueId", .integer).references("DBLeague", onDelete: .cascade)
-                }
+                })
                 
             }
         } catch {

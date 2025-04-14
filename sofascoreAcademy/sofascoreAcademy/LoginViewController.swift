@@ -108,6 +108,7 @@ class LoginViewController: UIViewController, BaseViewProtocol {
     func styleViews() {
         view.backgroundColor = .appBackground
         videoContainerView.backgroundColor = .clear
+        textContainerView.backgroundColor = .clear
         
         titleLabel.text = "Sign in to Sofascore"
         titleLabel.backgroundColor = .clear

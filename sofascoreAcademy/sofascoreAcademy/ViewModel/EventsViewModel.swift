@@ -26,6 +26,8 @@ class EventsViewModel: ObservableObject {
             let events = try await APIClient.getEvents(sport: SportSelectionManager.shared.selectedSport.urlSlug)
             sections = getLeagueSections(for: events)
             
+            insertIntoDB(sections)
+            
             if sections.isEmpty {
                 self.state = .error
             } else {
@@ -46,6 +48,24 @@ class EventsViewModel: ObservableObject {
                 return nil
             }
             return LeagueSection(league: league, matches: events.sorted { $0.startTimestamp < $1.startTimestamp })
+        }
+    }
+    
+    func insertIntoDB(_ sections: [LeagueSection]) {
+        sections.forEach { section in
+            let league = section.league
+            let leagueEntity = DBLeague(from: league)
+            try? DbManager.shared.dbQueue?.write { db in
+                try? leagueEntity.upsert(db)
+            }
+            
+            let events = section.matches
+            events.forEach { event in
+                let eventEntity = DBEvent(from: event)
+                try? DbManager.shared.dbQueue?.write { db in
+                    try? eventEntity.upsert(db)
+                }
+            }
         }
     }
 }
