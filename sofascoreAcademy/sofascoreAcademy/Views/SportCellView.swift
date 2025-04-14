@@ -23,6 +23,8 @@ class SportCellView: BaseView {
         sportNameLabel.textAlignment = .center
         sportNameLabel.setStyle(.regular14)
         sportNameLabel.textColor = .white
+        sportNameLabel.numberOfLines = 1
+        sportNameLabel.lineBreakMode = .byTruncatingTail
         sportIconImageView.contentMode = .scaleAspectFit
     }
     
@@ -35,9 +37,10 @@ class SportCellView: BaseView {
         sportNameLabel.snp.makeConstraints {
             $0.centerX.equalToSuperview()
             $0.top.equalTo(sportIconImageView.snp.bottom).offset(4)
+            $0.leading.greaterThanOrEqualToSuperview().offset(8)
+            $0.trailing.lessThanOrEqualToSuperview().offset(-8)
             $0.bottom.equalToSuperview()
         }
-        sportNameLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
     }
     
     func configure(with sport: SportType) {
