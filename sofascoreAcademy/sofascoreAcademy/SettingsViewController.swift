@@ -9,7 +9,6 @@ import Foundation
 import UIKit
 import SofaAcademic
 import SnapKit
-import KeychainAccess
 
 class SettingsViewController: UIViewController, BaseViewProtocol {
     private let dismissButton = UIButton(type: .system)
@@ -32,16 +31,13 @@ class SettingsViewController: UIViewController, BaseViewProtocol {
     }
     
     private func countDB() {
-        let eventCount = try? DbManager.shared.dbQueue?.read { db in
-            try? DBEvent.fetchAll(db).count
+        Task {
+            let eventCount = await StorageManager.shared.count(DBEvent.self)
+            let leagueCount = await StorageManager.shared.count(DBLeague.self)
+            
+            eventCountLabel.text = "Events: \(eventCount)"
+            leagueCountLabel.text = "Leagues: \(leagueCount)"
         }
-        
-        let leagueCount = try? DbManager.shared.dbQueue?.read { db in
-            try? DBLeague.fetchAll(db).count
-        }
-        
-        eventCountLabel.text = "Events: \(eventCount ?? 0)"
-        leagueCountLabel.text = "Leagues: \(leagueCount ?? 0)"
     }
     
     func addViews() {
@@ -86,7 +82,7 @@ class SettingsViewController: UIViewController, BaseViewProtocol {
         dismissButton.setTitle("Dismiss", for: .normal)
         dismissButton.addTarget(self, action: #selector(dismissSettings), for: .touchUpInside)
         
-        nameLabel.text = UserDefaults.standard.string(forKey: "name")
+        nameLabel.text = UserDefaults.standard.string(forKey: KeysManager.userDefaultsKey)
         nameLabel.backgroundColor = .clear
         nameLabel.font = .headlineBold32
         nameLabel.textColor = .primaryBlack
@@ -111,23 +107,18 @@ class SettingsViewController: UIViewController, BaseViewProtocol {
     }
     
     @objc func logoutButtonTapped() {
-        UserDefaults.standard.removeObject(forKey: "name")
-        
-        let keychain = Keychain(service: "com.academy")
-        try? keychain.remove("token")
+        UserDefaults.standard.removeObject(forKey: KeysManager.userDefaultsKey)
+        KeychainManager.shared.delete(forKey: KeysManager.keychainKey)
         
         clearDB()
-        
-        let loginVC = LoginViewController()
-        let navController = UINavigationController(rootViewController: loginVC)
-        navController.modalPresentationStyle = .fullScreen
-        present(navController, animated: true)
+
+        UIApplication.rootVC?.switchTo(.loggedOut)
     }
     
     private func clearDB() {
-        _ = try? DbManager.shared.dbQueue?.write { db in
-            try? DBEvent.deleteAll(db)
-            try? DBLeague.deleteAll(db)
+        Task {
+            await StorageManager.shared.clearTable(DBEvent.self)
+            await StorageManager.shared.clearTable(DBLeague.self)
         }
     }
 }

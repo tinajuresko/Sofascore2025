@@ -7,11 +7,8 @@
 
 import Foundation
 import UIKit
-import KeychainAccess
 
 struct LoginViewModel {
-    let keychain = Keychain(service: "com.academy")
-    
     var onLoginResponse: ((String) -> Void)?
     
     func login(username: String?, password: String?) async {
@@ -26,8 +23,8 @@ struct LoginViewModel {
             
         do {
             let response = try await APIClient.login(username: safeUsername, password: safePassword)
-            UserDefaults.standard.set(response.name, forKey: "name")
-            keychain["token"] = response.token
+            UserDefaults.standard.set(response.name, forKey: KeysManager.userDefaultsKey)
+            KeychainManager.shared.save(response.token, forKey: KeysManager.keychainKey)
             
             onLoginResponse?("")
         } catch {

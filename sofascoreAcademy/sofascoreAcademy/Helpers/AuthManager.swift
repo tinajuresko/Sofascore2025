@@ -6,13 +6,11 @@
 //
 
 import Foundation
-import KeychainAccess
 
 struct AuthManager {
     static func isUserAuthorized() -> Bool {
-        let name = UserDefaults.standard.string(forKey: "name")
-        let keychain = Keychain(service: "com.academy")
-        let token = keychain["token"]
+        let name = UserDefaults.standard.string(forKey: KeysManager.userDefaultsKey)
+        let token = KeychainManager.shared.read(forKey: KeysManager.keychainKey)
         
         return name != nil && token != nil
     }

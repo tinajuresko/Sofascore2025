@@ -10,20 +10,26 @@ import UIKit
 import AVKit
 import SnapKit
 import SofaAcademic
+import Combine
 
 class LoginViewController: UIViewController, BaseViewProtocol {
-    private var player: AVPlayer?
-    private var playerLayer: AVPlayerLayer?
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
+    private let stackView = UIStackView()
     private let videoContainerView = UIView()
     private let textContainerView = UIView()
     private let titleLabel = UILabel()
     private let textLabel = UILabel()
     private let usernameTextField = UITextField()
     private let passwordTextField = UITextField()
-    private let stackView = UIStackView()
+    private let errorLabel = UILabel()
     private let loginButton = UIButton()
-    let errorLabel = UILabel()
+    
+    private var player: AVPlayer?
+    private var playerLayer: AVPlayerLayer?
+    
     private var viewModel = LoginViewModel()
+    private var cancellables = Set<AnyCancellable>()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,13 +49,29 @@ class LoginViewController: UIViewController, BaseViewProtocol {
         }
     }
 
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        coordinator.animate(alongsideTransition: { _ in
+            let isLandscape = size.width > size.height
+            self.stackView.axis = isLandscape ? .horizontal : .vertical
+        }, completion: { _ in
+            self.view.setNeedsLayout()
+            self.view.layoutIfNeeded()
+        })
+    }
+
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        updateLayoutForOrientation()
+        playerLayer?.frame = videoContainerView.bounds
     }
 
     func addViews() {
-        view.addSubview(stackView)
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        contentView.addSubview(stackView)
+
         stackView.addArrangedSubview(textContainerView)
         stackView.addArrangedSubview(videoContainerView)
         
@@ -62,17 +84,21 @@ class LoginViewController: UIViewController, BaseViewProtocol {
     }
     
     func setupConstraints() {
-        stackView.snp.makeConstraints {
+        scrollView.snp.makeConstraints {
             $0.edges.equalTo(view.safeAreaLayoutGuide)
         }
 
-        textContainerView.snp.makeConstraints {
-            $0.height.equalTo(view.safeAreaLayoutGuide).multipliedBy(0.5)
+        contentView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+            $0.width.equalToSuperview()
+        }
+
+        stackView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
         }
 
         titleLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(10)
-            $0.centerX.equalToSuperview()
             $0.leading.trailing.equalToSuperview().inset(20)
         }
         
@@ -80,31 +106,36 @@ class LoginViewController: UIViewController, BaseViewProtocol {
             $0.top.equalTo(titleLabel.snp.bottom).offset(8)
             $0.leading.trailing.equalToSuperview().inset(20)
         }
-                
+        
         usernameTextField.snp.makeConstraints {
             $0.top.equalTo(textLabel.snp.bottom).offset(40)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(40)
         }
-                
+
         passwordTextField.snp.makeConstraints {
             $0.top.equalTo(usernameTextField.snp.bottom).offset(20)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(40)
         }
-        
+
         loginButton.snp.makeConstraints {
             $0.top.equalTo(passwordTextField.snp.bottom).offset(30)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(45)
         }
-        
+
         errorLabel.snp.makeConstraints {
             $0.top.equalTo(loginButton.snp.bottom).offset(10)
             $0.leading.trailing.equalToSuperview().inset(20)
+            $0.bottom.lessThanOrEqualToSuperview().inset(10)
+        }
+
+        videoContainerView.snp.makeConstraints {
+            $0.height.equalTo(300).priority(.low)
         }
     }
-    
+
     func styleViews() {
         view.backgroundColor = .appBackground
         videoContainerView.backgroundColor = .clear
@@ -157,30 +188,6 @@ class LoginViewController: UIViewController, BaseViewProtocol {
         errorLabel.numberOfLines = 2
     }
     
-    private func updateLayoutForOrientation() {
-        if UIDevice.current.orientation.isLandscape {
-            stackView.axis = .horizontal
-            textContainerView.snp.remakeConstraints {
-                $0.width.equalTo(view.safeAreaLayoutGuide).multipliedBy(0.5)
-                $0.leading.trailing.equalTo(view).inset(20)
-            }
-            videoContainerView.snp.remakeConstraints {
-                $0.width.equalTo(view.safeAreaLayoutGuide).multipliedBy(0.5)
-                $0.top.bottom.equalTo(view).inset(16)
-            }
-        } else {
-            stackView.axis = .vertical
-            textContainerView.snp.remakeConstraints {
-                $0.height.equalTo(view.safeAreaLayoutGuide).multipliedBy(0.5)
-                $0.leading.trailing.equalTo(view).inset(20)
-            }
-            videoContainerView.snp.remakeConstraints {
-                $0.height.equalTo(view.safeAreaLayoutGuide).multipliedBy(0.5)
-                $0.leading.trailing.equalTo(view).inset(16)
-            }
-        }
-    }
-    
     private func setupVideoPlayer() {
         guard let path = Bundle.main.path(forResource: "sports", ofType: "mp4") else {
             return
@@ -192,14 +199,12 @@ class LoginViewController: UIViewController, BaseViewProtocol {
         playerLayer = layer
         player?.play()
 
-        NotificationCenter.default.addObserver(
-            forName: .AVPlayerItemDidPlayToEndTime,
-            object: player?.currentItem,
-            queue: .main
-        ) { [weak self] _ in
-            self?.player?.seek(to: .zero)
-            self?.player?.play()
-        }
+        NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
+            .sink { [weak self] _ in
+                self?.player?.seek(to: .zero)
+                self?.player?.play()
+            }
+            .store(in: &cancellables)
     }
     
     @objc private func loginButtonTapped() {
@@ -207,8 +212,7 @@ class LoginViewController: UIViewController, BaseViewProtocol {
             DispatchQueue.main.async {
                 if errorMessage.isEmpty {
                     self?.errorLabel.text = errorMessage
-                    let eventsVC = EventsViewController()
-                    self?.navigationController?.pushViewController(eventsVC, animated: true)
+                    UIApplication.rootVC?.switchTo(.loggedIn)
                 } else {
                     self?.errorLabel.text = errorMessage
                 }

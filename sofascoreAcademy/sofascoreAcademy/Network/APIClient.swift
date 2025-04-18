@@ -7,7 +7,6 @@
 
 import Foundation
 import Network
-import KeychainAccess
 
 enum APIError: Error {
     case invalidURL
@@ -46,8 +45,7 @@ enum APIClient {
         request.httpBody = body
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let keychain = Keychain(service: "com.academy")
-        if let token = keychain["token"] {
+        if let token = KeychainManager.shared.read(forKey: KeysManager.keychainKey) {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
         return request
