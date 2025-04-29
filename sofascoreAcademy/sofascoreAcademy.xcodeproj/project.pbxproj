@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		26B8E21D2D84658B0042D2C1 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 26B8E21C2D84658B0042D2C1 /* SnapKit */; };
 		26B8E3312D8B04E90042D2C1 /* SofaAcademic in Frameworks */ = {isa = PBXBuildFile; productRef = 26B8E3302D8B04E90042D2C1 /* SofaAcademic */; };
+		26F017252DABF8F400E60DB1 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 26F017242DABF8F400E60DB1 /* KeychainAccess */; };
+		26F0172A2DAC204900E60DB1 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 26F017292DAC204900E60DB1 /* GRDB */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +45,8 @@
 			files = (
 				26B8E3312D8B04E90042D2C1 /* SofaAcademic in Frameworks */,
 				26B8E21D2D84658B0042D2C1 /* SnapKit in Frameworks */,
+				26F017252DABF8F400E60DB1 /* KeychainAccess in Frameworks */,
+				26F0172A2DAC204900E60DB1 /* GRDB in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -87,6 +91,8 @@
 			packageProductDependencies = (
 				26B8E21C2D84658B0042D2C1 /* SnapKit */,
 				26B8E3302D8B04E90042D2C1 /* SofaAcademic */,
+				26F017242DABF8F400E60DB1 /* KeychainAccess */,
+				26F017292DAC204900E60DB1 /* GRDB */,
 			);
 			productName = hw2;
 			productReference = 26B8E2032D8464ED0042D2C1 /* sofascoreAcademy.app */;
@@ -119,6 +125,8 @@
 			packageReferences = (
 				26B8E21B2D84658B0042D2C1 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				26B8E32F2D8B04E90042D2C1 /* XCRemoteSwiftPackageReference "academy" */,
+				26F017232DABF8F400E60DB1 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+				26F017282DAC204900E60DB1 /* XCRemoteSwiftPackageReference "GRDB" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 26B8E2042D8464ED0042D2C1 /* Products */;
@@ -364,6 +372,22 @@
 				kind = branch;
 			};
 		};
+		26F017232DABF8F400E60DB1 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		26F017282DAC204900E60DB1 /* XCRemoteSwiftPackageReference "GRDB" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDB.swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -376,6 +400,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 26B8E32F2D8B04E90042D2C1 /* XCRemoteSwiftPackageReference "academy" */;
 			productName = SofaAcademic;
+		};
+		26F017242DABF8F400E60DB1 /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 26F017232DABF8F400E60DB1 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
+		};
+		26F017292DAC204900E60DB1 /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 26F017282DAC204900E60DB1 /* XCRemoteSwiftPackageReference "GRDB" */;
+			productName = GRDB;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

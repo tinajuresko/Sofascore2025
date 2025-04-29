@@ -26,6 +26,8 @@ class EventsViewModel: ObservableObject {
             let events = try await APIClient.getEvents(sport: SportSelectionManager.shared.selectedSport.urlSlug)
             sections = getLeagueSections(for: events)
             
+            await StorageManager.shared.insertIntoDB(sections)
+            
             if sections.isEmpty {
                 self.state = .error
             } else {

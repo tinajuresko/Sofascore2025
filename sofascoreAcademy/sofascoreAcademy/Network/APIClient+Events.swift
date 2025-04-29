@@ -11,7 +11,7 @@ import Network
 extension APIClient {
     static func getEvents(sport: String) async throws -> [Event] {
         return try await fetch(
-            path: "/events",
+            path: "/secure/events",
             queryItems: [URLQueryItem(name: "sport", value: sport)]
         )
     }

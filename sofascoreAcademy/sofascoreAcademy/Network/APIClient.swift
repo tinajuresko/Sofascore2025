@@ -21,10 +21,11 @@ enum APIClient {
     static func fetch<T: Decodable>(
         path: String,
         queryItems: [URLQueryItem] = [],
-        method: String = "GET"
+        method: String = "GET",
+        body: Data? = nil
     ) async throws -> T {
         let url = try buildURL(path: path, queryItems: queryItems)
-        let request = buildRequest(url: url, method: method)
+        let request = buildRequest(url: url, method: method, body: body)
         let data = try await sendRequest(request)
         return try decode(data: data)
     }
@@ -38,9 +39,15 @@ enum APIClient {
         return url
     }
     
-    private static func buildRequest(url: URL, method: String) -> URLRequest {
+    private static func buildRequest(url: URL, method: String, body: Data? = nil) -> URLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = method
+        request.httpBody = body
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        if let token = KeychainManager.shared.read(forKey: KeysManager.keychainKey) {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
         return request
     }
     
@@ -60,4 +67,3 @@ enum APIClient {
         }
     }
 }
-
