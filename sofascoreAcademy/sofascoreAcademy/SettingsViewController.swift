@@ -79,6 +79,10 @@ class SettingsViewController: UIViewController, BaseViewProtocol {
     func styleViews() {
         view.backgroundColor = .white
         title = "Settings"
+        navigationController?.navigationBar.titleTextAttributes = [
+            .foregroundColor: UIColor(named: "primaryBlack") ?? .black
+        ]
+
         dismissButton.setTitle("Dismiss", for: .normal)
         dismissButton.addTarget(self, action: #selector(dismissSettings), for: .touchUpInside)
         

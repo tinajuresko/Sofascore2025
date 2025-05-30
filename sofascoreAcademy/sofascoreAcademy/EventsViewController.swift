@@ -3,15 +3,16 @@ import SofaAcademic
 import SnapKit
 import Combine
 
-class EventsViewController: UIViewController, BaseViewProtocol {
+class EventsViewController: UIViewController, BaseViewProtocol, LoadableView {
     private let topBackgroundView = UIView()
     private let menuView = MenuView()
     private var eventsViewModel = EventsViewModel()
     private let eventsHeaderView = EventsHeaderView()
-    private let activityIndicator = UIActivityIndicatorView(style: .medium)
-    private let errorLabel = UILabel()
     private let matchesTableView: UITableView = .init()
     private var cancellables = Set<AnyCancellable>()
+    
+    let activityIndicator = UIActivityIndicatorView(style: .medium)
+    let errorLabel = UILabel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,54 +28,33 @@ class EventsViewController: UIViewController, BaseViewProtocol {
         }
         observeEventsViewModel()
     }
-    
-    private func observeEventsViewModel () {
+    private func observeEventsViewModel() {
         eventsViewModel.$state
             .receive(on: DispatchQueue.main)
             .sink { [weak self] state in
-                self?.handleState(state)
+                self?.handleState(state,
+                                  onLoading: {
+                                      self?.showLoadingState()
+                                  },
+                                  onLoaded: { _ in
+                                      self?.showLoadedState()
+                                  },
+                                  onError: {
+                                      self?.showErrorState()
+                                  },
+                                  onIdle: {
+                                      Task {
+                                          await self?.eventsViewModel.loadSections()
+                                      }
+                                  })
             }
             .store(in: &cancellables)
-    }
-    
-    private func handleState(_ state: EventsViewModel.State) {
-        switch state {
-        case .idle:
-            Task {
-                await eventsViewModel.loadSections()
-            }
-        case .loading:
-            showLoadingState()
-        case .loaded(_):
-            showLoadedState()
-        case .error:
-            showErrorState()
-        }
-    }
-    
-    func showLoadingState() {
-        activityIndicator.startAnimating()
-        hideError()
     }
     
     func showLoadedState() {
         activityIndicator.stopAnimating()
         hideError()
         matchesTableView.reloadData()
-    }
-    
-    func showErrorState() {
-        activityIndicator.stopAnimating()
-        showError("No data available.")
-    }
-    
-    func showError(_ message: String) {
-        errorLabel.text = message
-        errorLabel.isHidden = false
-    }
-
-    func hideError() {
-        errorLabel.isHidden = true
     }
     
     func handleSportSelectionChanged() {
@@ -210,4 +190,3 @@ extension EventsViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
 }
-

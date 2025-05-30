@@ -11,8 +11,20 @@ import Network
 extension APIClient {
     static func getEvents(sport: String) async throws -> [Event] {
         return try await fetch(
-            path: "/secure/events",
+            path: "/events",
             queryItems: [URLQueryItem(name: "sport", value: sport)]
+        )
+    }
+    
+    static func getEvent(by id: Int) async throws -> Event {
+        return try await fetch(
+            path: "/events/\(id)"
+        )
+    }
+    
+    static func getIncidents(forEventId id: Int) async throws -> [Incident] {
+        return try await fetch(
+            path: "/events/\(id)/incidents"
         )
     }
 }
