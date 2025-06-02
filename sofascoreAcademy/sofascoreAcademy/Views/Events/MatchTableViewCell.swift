@@ -23,8 +23,7 @@ class MatchTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(matchView)
-        self.backgroundColor = .clear
-        
+        self.backgroundColor = .white
         
         matchView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(eventCellTapped)))
         

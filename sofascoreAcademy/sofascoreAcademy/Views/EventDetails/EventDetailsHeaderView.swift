@@ -31,6 +31,13 @@ class EventDetailsHeaderView: BaseView {
     }
         
     override func styleViews() {
+        backgroundColor = .white
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowOpacity = 0.15
+        layer.shadowOffset = CGSize(width: 0, height: 4)
+        layer.shadowRadius = 6
+        layer.masksToBounds = false
+        
         homeTeamLabel.font = .regularBold14
         awayTeamLabel.font = .regularBold14
         homeTeamLabel.textColor = .primaryBlack
@@ -48,7 +55,19 @@ class EventDetailsHeaderView: BaseView {
         eventStatusLabel.textAlignment = .center
         eventStatusLabel.numberOfLines = 2
     }
-        
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let shadowHeight: CGFloat = 6
+        let shadowRect = CGRect(
+            x: 0,
+            y: bounds.height - shadowHeight,
+            width: bounds.width,
+            height: shadowHeight
+        )
+        layer.shadowPath = UIBezierPath(rect: shadowRect).cgPath
+    }
+
     override func setupConstraints() {
         super.setupConstraints()
             

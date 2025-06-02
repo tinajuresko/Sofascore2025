@@ -53,43 +53,15 @@ class IncidentSectionView: BaseView {
         
     func configure(with incidents: [Incident], status: EventStatus) {
         self.viewModel = IncidentSectionViewModel(incidents: incidents, status: status)
+        incidentsTableView.tableHeaderView = makeTableHeaderSpacer(height: 8)
         incidentsTableView.reloadData()
     }
     
-    private func makeHeaderView(for period: Int) -> UIView {
-        let container = UIView()
-        container.backgroundColor = .periodContainerBackground
-        container.layer.cornerRadius = 16
-        container.clipsToBounds = true
-        container.snp.makeConstraints { $0.height.equalTo(24) }
-
-        let label = UILabel()
-        label.font = .regularBold12
-        label.textColor = .primaryBlack
-        label.textAlignment = .center
-        label.text = self.periodTitle(for: period)
-
-        container.addSubview(label)
-        container.snp.makeConstraints {
-            $0.height.equalTo(56)
-        }
-        label.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(8)
-            $0.centerY.equalToSuperview()
-        }
-
-        return container
-    }
-
-    private func periodTitle(for number: Int) -> String {
-        switch number {
-        case 1: return "First half"
-        case 2: return "Second half"
-        case 3: return "Extra time – First half"
-        case 4: return "Extra time – Second half"
-        case 5: return "Penalties"
-        default: return "Period \(number)"
-        }
+    private func makeTableHeaderSpacer(height: CGFloat) -> UIView {
+        let spacer = UIView()
+        spacer.backgroundColor = .clear
+        spacer.frame = CGRect(x: 0, y: 0, width: 1, height: height)
+        return spacer
     }
 }
 
@@ -130,4 +102,3 @@ extension IncidentSectionView: UITableViewDelegate, UITableViewDataSource {
         }
     }
 }
-

@@ -33,9 +33,7 @@ final class IncidentSectionViewModel {
 
         for incident in incidents {
             if incident.type == .periodEnd {
-                //result.append(IncidentSection(period: currentPeriod, incidents: currentIncidents))
                 currentPeriod += 1
-                //currentIncidents = []
             } else {
                 currentIncidents.append(incident)
             }

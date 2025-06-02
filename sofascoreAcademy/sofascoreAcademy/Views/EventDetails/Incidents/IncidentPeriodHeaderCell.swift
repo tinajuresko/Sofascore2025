@@ -32,7 +32,7 @@ class IncidentPeriodHeaderCell: UITableViewCell {
     
     private func styleViews() {
         selectionStyle = .none
-        backgroundColor = .clear
+        backgroundColor = .white
 
         container.backgroundColor = .periodContainerBackground
         container.layer.cornerRadius = 16

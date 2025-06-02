@@ -9,10 +9,6 @@ import Foundation
 import UIKit
 import GRDB
 
-struct EventsContainer: Decodable {
-    public let events: [Event]
-}
-
 struct Team: Decodable {
     public let id: Int
     public let name: String

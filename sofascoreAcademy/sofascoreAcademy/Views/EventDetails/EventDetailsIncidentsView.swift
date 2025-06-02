@@ -30,7 +30,8 @@ class EventDetailsIncidentsView: BaseView {
     override func setupConstraints() {
         super.setupConstraints()
         stackView.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(16)
+            $0.top.equalToSuperview()
+            $0.leading.trailing.bottom.equalToSuperview()
         }
     }
     

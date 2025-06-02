@@ -26,11 +26,8 @@ class IncidentsViewModel: ObservableObject {
                 incidents = try await APIClient.getIncidents(forEventId: eventId)
                 await onIncidentsLoaded?(incidents)
                 
-                if incidents.isEmpty {
-                    self.state = .error
-                } else {
-                    self.state = .loaded(self.incidents)
-                }
+                self.state = .loaded(self.incidents)
+                
             } catch {
                 self.state = .error
             }

@@ -122,7 +122,7 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol, LoadableVi
     
     func styleViews() {
         view.backgroundColor = .appBackground
-        incidentsView.backgroundColor = .clear
+        incidentsView.backgroundColor = .containerBackground
         
         activityIndicator.color = .gray
         activityIndicator.hidesWhenStopped = true

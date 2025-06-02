@@ -50,7 +50,7 @@ class IncidentCell: UITableViewCell {
     }
     
     private func styleViews() {
-        self.backgroundColor = .clear
+        self.backgroundColor = .white
         iconImageView.contentMode = .scaleAspectFit
         
         minuteLabel.backgroundColor = .clear

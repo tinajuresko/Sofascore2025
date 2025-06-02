@@ -4,7 +4,7 @@ import SnapKit
 import Combine
 
 class EventsViewController: UIViewController, BaseViewProtocol, LoadableView {
-    private let topBackgroundView = UIView()
+    private var topBackgroundView: TopBackgroundView!
     private let menuView = MenuView()
     private var eventsViewModel = EventsViewModel()
     private let eventsHeaderView = EventsHeaderView()
@@ -72,7 +72,7 @@ class EventsViewController: UIViewController, BaseViewProtocol, LoadableView {
     }
     
     func addViews() {
-        view.addSubview(topBackgroundView)
+        topBackgroundView = addTopBackgroundView()
         view.addSubview(menuView)
         view.addSubview(eventsHeaderView)
         view.addSubview(matchesTableView)
@@ -81,11 +81,6 @@ class EventsViewController: UIViewController, BaseViewProtocol, LoadableView {
     }
     
     func setupConstraints() {
-        topBackgroundView.snp.makeConstraints {
-            $0.top.leading.trailing.equalToSuperview()
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.top)
-        }
-        
         eventsHeaderView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             $0.leading.trailing.equalToSuperview()
@@ -112,7 +107,6 @@ class EventsViewController: UIViewController, BaseViewProtocol, LoadableView {
         view.backgroundColor = .appBackground
         matchesTableView.separatorStyle = .none
         matchesTableView.backgroundColor = .clear
-        topBackgroundView.backgroundColor = .headerBackground
         setTableViewDelegates()
         setupTableView(matchesTableView: matchesTableView)
         
@@ -151,6 +145,14 @@ extension EventsViewController: MatchTableCellDelegate {
     }
 }
 
+// MARK: - LeagueHeaderViewDelegate
+extension EventsViewController: LeagueHeaderViewDelegate {
+    func didTapLeague(_ league: League) {
+        let leagueDetailsVC = LeagueDetailsViewController(league: league)
+        navigationController?.pushViewController(leagueDetailsVC, animated: true)
+    }
+}
+
 // MARK: - UITableViewDelegate, UITableViewDataSource
 extension EventsViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -179,6 +181,7 @@ extension EventsViewController: UITableViewDelegate, UITableViewDataSource {
         }
         let league = eventsViewModel.sections[section].league
         header.configure(with: league)
+        header.delegate = self
         return header
     }
     

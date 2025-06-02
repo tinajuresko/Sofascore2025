@@ -11,18 +11,22 @@ import SnapKit
 import SofaAcademic
 
 class NoResultsView: BaseView {
+    private let contentView = UIView()
     private let resultsView = UIView()
     private let resultsLabel = UILabel()
     private let viewTournamentsButton = UIButton()
     
     override func addViews() {
         super.addViews()
-        addSubview(resultsView)
+        addSubview(contentView)
+        contentView.addSubview(resultsView)
         resultsView.addSubview(resultsLabel)
-        addSubview(viewTournamentsButton)
+        contentView.addSubview(viewTournamentsButton)
     }
     
     override func styleViews() {
+        contentView.backgroundColor = .white
+        
         resultsView.backgroundColor = .containerBackground
         resultsView.layer.cornerRadius = 6
 
@@ -31,7 +35,7 @@ class NoResultsView: BaseView {
         resultsLabel.textColor = .secondaryGray
         resultsLabel.textAlignment = .center
 
-        viewTournamentsButton.setTitle("View tournaments", for: .normal)
+        viewTournamentsButton.setTitle("View Tournament Details", for: .normal)
         viewTournamentsButton.titleLabel?.font = .regularBold14
         viewTournamentsButton.setTitleColor(.headerBackground, for: .normal)
         viewTournamentsButton.layer.borderColor = UIColor.headerBackground.cgColor
@@ -41,8 +45,14 @@ class NoResultsView: BaseView {
     override func setupConstraints() {
         super.setupConstraints()
 
+        contentView.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(8)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(148)
+        }
+        
         resultsView.snp.makeConstraints {
-            $0.top.equalToSuperview()
+            $0.top.equalToSuperview().offset(8)
             $0.leading.trailing.equalToSuperview().inset(layoutMargins.left)
             $0.height.equalTo(52)
         }
