@@ -12,19 +12,23 @@ import SnapKit
 import Combine
 
 class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableView {
+    private let league: League
     private var topBackgroundView: TopBackgroundView!
     private let navigationView = TournamentNavigationView()
     private let tournamentHeaderView = TournamentHeaderView()
     private let tournamentTabsView = TournamentTabsView()
     private let contentView = UIView()
     private var currentContentView: UIView?
-    private let tournamentMatchesViewModel: TournamentMatchesViewModel
     
-    private let league: League
     private var cancellables = Set<AnyCancellable>()
     let activityIndicator = UIActivityIndicatorView(style: .medium)
     let errorLabel = UILabel()
+    private let tournamentMatchesViewModel: TournamentMatchesViewModel
     
+    private var tournamentTabsTopConstraint: Constraint!
+    private var tournamentTabsAltTopConstraint: Constraint!
+    private var tournamentHeaderHeightConstraint: Constraint!
+
     init(league: League) {
         self.league = league
         self.tournamentMatchesViewModel = TournamentMatchesViewModel(leagueId: league.id)
@@ -42,6 +46,9 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
         styleViews()
         setupNavigationBar()
         
+        navigationView.configureTitle(league.name)
+        navigationView.setTitleAlpha(0)
+        
         tournamentTabsView.onTabSelected = { [weak self] tab in
             self?.handleTabChange(to: tab)
         }
@@ -56,6 +63,18 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
         
         observeTournamentMatchesViewModel()
         tournamentMatchesViewModel.loadTournamentMatches()
+    }
+    
+    private var hasLaidOutSubviewsOnce = false
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if !hasLaidOutSubviewsOnce {
+            hasLaidOutSubviewsOnce = true
+            if let scrollView = (currentContentView as? TournamentMatchesView)?.scrollView {
+                scrollViewDidScroll(scrollView)
+            }
+        }
     }
     
     private func observeTournamentMatchesViewModel() {
@@ -91,6 +110,9 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
         case .matches:
             let matchesView = TournamentMatchesView()
             matchesView.configure(with: tournamentMatchesViewModel)
+            
+            (matchesView as TournamentMatchesView).scrollView.delegate = self
+
             contentView.addSubview(matchesView)
             matchesView.snp.makeConstraints { $0.edges.equalToSuperview() }
             currentContentView = matchesView
@@ -111,11 +133,10 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
     
     func addViews() {
         topBackgroundView = addTopBackgroundView()
-        view.addSubview(navigationView)
         view.addSubview(tournamentHeaderView)
         view.addSubview(tournamentTabsView)
         view.addSubview(contentView)
-        
+        view.addSubview(navigationView)
         view.addSubview(activityIndicator)
         view.addSubview(errorLabel)
     }
@@ -128,20 +149,23 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
         navigationView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide)
             $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(48)
         }
         
         tournamentHeaderView.snp.makeConstraints {
             $0.top.equalTo(navigationView.snp.bottom)
             $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(72)
+            tournamentHeaderHeightConstraint = $0.height.equalTo(72).constraint
         }
 
         tournamentTabsView.snp.makeConstraints {
-            $0.top.equalTo(tournamentHeaderView.snp.bottom)
+            tournamentTabsTopConstraint = $0.top.equalTo(tournamentHeaderView.snp.bottom).constraint
+            tournamentTabsAltTopConstraint = $0.top.equalTo(navigationView.snp.bottom).constraint
+            tournamentTabsAltTopConstraint.deactivate()
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(48)
         }
-        
+
         contentView.snp.makeConstraints {
             $0.top.equalTo(tournamentTabsView.snp.bottom)
             $0.leading.trailing.bottom.equalToSuperview()
@@ -154,5 +178,32 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
         errorLabel.snp.makeConstraints {
             $0.center.equalToSuperview()
         }
+    }
+}
+
+extension LeagueDetailsViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offset = scrollView.contentOffset.y
+        let maxOffset: CGFloat = 72
+        let clampedOffset = min(max(offset, 0), maxOffset)
+
+        // Shrink header
+        tournamentHeaderHeightConstraint.update(offset: 72 - clampedOffset)
+
+        if clampedOffset >= maxOffset {
+            if tournamentTabsTopConstraint.isActive {
+                tournamentTabsTopConstraint.deactivate()
+                tournamentTabsAltTopConstraint.activate()
+            }
+        } else {
+            if tournamentTabsAltTopConstraint.isActive {
+                tournamentTabsAltTopConstraint.deactivate()
+                tournamentTabsTopConstraint.activate()
+            }
+        }
+        let navAlpha = min(1, max(0, (offset - 30) / 30))
+        navigationView.setTitleAlpha(navAlpha)
+        let headerAlpha = max(0, 1 - (offset / maxOffset))
+        tournamentHeaderView.alpha = headerAlpha
     }
 }

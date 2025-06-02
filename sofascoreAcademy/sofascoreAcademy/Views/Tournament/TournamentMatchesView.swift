@@ -16,6 +16,10 @@ class TournamentMatchesView: BaseView {
     private var viewModel: TournamentMatchesViewModel!
     private var cancellables = Set<AnyCancellable>()
     
+    var scrollView: UIScrollView {
+        return tableView
+    }
+    
     override func addViews() {
         super.addViews()
         addSubview(tableView)
@@ -75,13 +79,13 @@ extension TournamentMatchesView: UITableViewDataSource, UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let sortedKeys = viewModel?.groupedMatches.keys.sorted() ?? []
+        let sortedKeys =  viewModel.sortedKeys
         let key = sortedKeys[section]
         return (viewModel?.groupedMatches[key]?.count ?? 0) + 1 // +1 -> header
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let sortedKeys = viewModel.groupedMatches.keys.sorted()
+        let sortedKeys =  viewModel.sortedKeys
         let roundKey = sortedKeys[indexPath.section]
 
         if indexPath.row == 0 {

@@ -13,6 +13,9 @@ class TournamentMatchesViewModel: ObservableObject {
     @Published private(set) var state: State<[Event]> = .idle
     private let leagueId: Int
     var events: [Event] = []
+    var sortedKeys: [Int] {
+        groupedMatches.keys.sorted()
+    }
 
     init(leagueId: Int) {
         self.leagueId = leagueId
@@ -30,9 +33,7 @@ class TournamentMatchesViewModel: ObservableObject {
                     self.state = .loaded(self.events)
                 }
                 
-                let grouped = Dictionary(grouping: events) { $0.round ?? 0 }
-                let sortedGrouped = grouped.sorted { $0.key < $1.key }
-                groupedMatches = Dictionary(uniqueKeysWithValues: sortedGrouped)
+                groupedMatches = Dictionary(grouping: events) { $0.round ?? 0 }
                 
             } catch {
                 self.state = .error
