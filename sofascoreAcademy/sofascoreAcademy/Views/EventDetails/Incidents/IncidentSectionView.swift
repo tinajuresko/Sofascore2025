@@ -17,6 +17,7 @@ class IncidentSectionView: BaseView {
     private var sections: [(period: Int, incidents: [Incident])] = []
     
     private var viewModel: IncidentSectionViewModel?
+    private var selectedSport: SportType?
     
     override func addViews() {
         super.addViews()
@@ -51,8 +52,9 @@ class IncidentSectionView: BaseView {
         }
     }
         
-    func configure(with incidents: [Incident], status: EventStatus) {
+    func configure(with incidents: [Incident], status: EventStatus, selectedSport: SportType) {
         self.viewModel = IncidentSectionViewModel(incidents: incidents, status: status)
+        self.selectedSport = selectedSport
         incidentsTableView.tableHeaderView = makeTableHeaderSpacer(height: 8)
         incidentsTableView.reloadData()
     }
@@ -97,7 +99,7 @@ extension IncidentSectionView: UITableViewDelegate, UITableViewDataSource {
             }
 
             let incident = sectionData.incidents[indexPath.row - 1] // -1 jer je header na indexu 0
-            cell.configure(with: incident)
+            cell.configure(with: incident, for: selectedSport ?? .football)
             return cell
         }
     }

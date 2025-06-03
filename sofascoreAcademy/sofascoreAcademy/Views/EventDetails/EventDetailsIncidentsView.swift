@@ -44,7 +44,7 @@ class EventDetailsIncidentsView: BaseView {
                 let noResultsView = NoResultsView()
                 self.stackView.addArrangedSubview(noResultsView)
             default:
-                self.sectionView.configure(with: incidents, status: status)
+                self.sectionView.configure(with: incidents, status: status, selectedSport: SportSelectionManager.shared.selectedSport)
                 self.stackView.addArrangedSubview(self.sectionView)
             }
         }

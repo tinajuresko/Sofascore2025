@@ -13,26 +13,28 @@ import Combine
 
 class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableView, ScrollAnimatableViewController, UIScrollViewDelegate {
     private let league: League
+    private let tournamentMatchesViewModel: TournamentMatchesViewModel
+    private let tournamentStandingsViewModel: TournamentStandingsViewModel
+    
     private var topBackgroundView: TopBackgroundView!
     private let contentView = UIView()
     private var currentContentView: UIView?
-    
-    private var cancellables = Set<AnyCancellable>()
-    let activityIndicator = UIActivityIndicatorView(style: .medium)
-    let errorLabel = UILabel()
-    private let tournamentMatchesViewModel: TournamentMatchesViewModel
+    var tournamentTabsView = TournamentTabsView()
+    var navigationView = CustomNavigationView()
+    var customHeaderView = CustomHeaderView()
     
     var customHeaderHeightConstraint: Constraint!
     var tournamentTabsTopConstraint: Constraint!
     var tournamentTabsAltTopConstraint: Constraint!
-        
-    var tournamentTabsView = TournamentTabsView()
-    var navigationView = CustomNavigationView()
-    var customHeaderView = CustomHeaderView()
+    
+    private var cancellables = Set<AnyCancellable>()
+    let activityIndicator = UIActivityIndicatorView(style: .medium)
+    let errorLabel = UILabel()
 
     init(league: League) {
         self.league = league
         self.tournamentMatchesViewModel = TournamentMatchesViewModel(leagueId: league.id)
+        self.tournamentStandingsViewModel = TournamentStandingsViewModel(leagueId: league.id)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -83,6 +85,7 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
         )
     }
     
+    //loading data
     private func observeTournamentMatchesViewModel() {
         tournamentMatchesViewModel.$state
             .receive(on: DispatchQueue.main)
@@ -96,39 +99,72 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
         handleState(state,
             onLoading: { showLoadingState() },
             onLoaded: { events in
-            showMatches(events)
+            showData()
                 showLoadedState()
             },
             onError: { showErrorState(message: "No data available.") },
-                    onIdle: { self.hideError() }
+            onIdle: { self.hideError() }
+        )
+    }
+    
+    private func observeTournamentStandingsViewModel(viewModel: TournamentStandingsViewModel, view: TournamentStandingsView) {
+        viewModel.$state
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] state in
+                self?.handleStandingsState(state, view: view)
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func handleStandingsState(_ state: State<[Standings]>, view: TournamentStandingsView) {
+        handleState(state,
+            onLoading: { showLoadingState() },
+            onLoaded: { standings in
+            view.configure(standings: standings, sport: SportSelectionManager.shared.selectedSport)
+            showData()
+                showLoadedState()
+            },
+            onError: { showErrorState(message: "No data available.") },
+            onIdle: { self.hideError() }
         )
     }
         
-    private func showMatches(_ events: [Event]) {
+    private func showData() {
         activityIndicator.stopAnimating()
         errorLabel.isHidden = true
     }
     
     private func handleTabChange(to tab: LeagueTabType) {
         currentContentView?.removeFromSuperview()
-
+        errorLabel.isHidden = true
         switch tab {
         case .matches:
             let matchesView = TournamentMatchesView()
             matchesView.configure(with: tournamentMatchesViewModel)
+            
             (matchesView as TournamentMatchesView).scrollView.delegate = self
+            
             contentView.addSubview(matchesView)
             matchesView.snp.makeConstraints { $0.edges.equalToSuperview() }
             currentContentView = matchesView
+            
+            observeTournamentMatchesViewModel()
+            tournamentMatchesViewModel.loadTournamentMatches()
 
         case .standings:
             let standingsView = TournamentStandingsView()
             contentView.addSubview(standingsView)
             standingsView.snp.makeConstraints { $0.edges.equalToSuperview() }
             currentContentView = standingsView
+            
+            standingsView.externalScrollDelegate = self
+
+            observeTournamentStandingsViewModel(viewModel: tournamentStandingsViewModel, view: standingsView)
+            tournamentStandingsViewModel.loadTournamentStandings()
         }
     }
     
+    //styles and setup func
     func setupNavigationBar() {
         navigationView.onBackTapped = { [weak self] in
             self?.navigationController?.popViewController(animated: true)
@@ -147,6 +183,13 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
     
     func styleViews() {
         view.backgroundColor = .appBackground
+        
+        activityIndicator.color = .gray
+        activityIndicator.hidesWhenStopped = true
+        errorLabel.textColor = .secondaryGray
+        errorLabel.font = .regular14
+        errorLabel.textAlignment = .center
+        errorLabel.isHidden = true
     }
     
     func setupConstraints() {

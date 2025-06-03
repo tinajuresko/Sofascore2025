@@ -109,9 +109,9 @@ class IncidentCell: UITableViewCell {
         currentConstraintsSet = false
     }
 
-    func configure(with incident: Incident) {
+    func configure(with incident: Incident, for sport: SportType) {
         print(incident)
-        let selectedSport = SportSelectionManager.shared.selectedSport
+        let selectedSport = sport
         prepareForReuse()
 
         if currentConstraintsSet {
