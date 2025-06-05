@@ -1,8 +1,8 @@
 //
-//  LeagueDetailsViewController.swift
+//  TeamViewController.swift
 //  sofascoreAcademy
 //
-//  Created by Tina Jureško on 31.05.2025..
+//  Created by Tina Jureško on 03.06.2025..
 //
 
 import Foundation
@@ -11,11 +11,8 @@ import SofaAcademic
 import SnapKit
 import Combine
 
-class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableView, ScrollAnimatableViewController, UIScrollViewDelegate {
-    private let league: League
-    private let tournamentMatchesViewModel: TournamentMatchesViewModel
-    private let tournamentStandingsViewModel: TournamentStandingsViewModel
-    
+class TeamViewController: UIViewController, BaseViewProtocol, LoadableView, ScrollAnimatableViewController, UIScrollViewDelegate {
+    private let teamViewModel: TeamViewModel
     private var topBackgroundView: TopBackgroundView!
     private let contentView = UIView()
     private var currentContentView: UIView?
@@ -30,11 +27,13 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
     private var cancellables = Set<AnyCancellable>()
     let activityIndicator = UIActivityIndicatorView(style: .medium)
     let errorLabel = UILabel()
+    
+    private let infoLabel = UILabel()
+    private let teamDetailsView = TeamDetailsView()
 
-    init(league: League) {
-        self.league = league
-        self.tournamentMatchesViewModel = TournamentMatchesViewModel(leagueId: league.id)
-        self.tournamentStandingsViewModel = TournamentStandingsViewModel(leagueId: league.id)
+
+    init(teamViewModel: TeamViewModel) {
+        self.teamViewModel = teamViewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -48,47 +47,30 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
         setupConstraints()
         styleViews()
         setupNavigationBar()
-        navigationView.configureTitle(league.name)
-        navigationView.setTitleAlpha(0)
         
-        customTabsView.configure(firstTab: .matches, secondTab: .standings)
+        observeViewModel()
+        teamViewModel.loadTeam()
+        
+        /*navigationView.configureTitle(teamViewModel.team?.name ?? "")
+        navigationView.setTitleAlpha(0)*/
+        
+        customTabsView.configure(firstTab: .details, secondTab: .squad)
         customTabsView.onTabSelected = { [weak self] tab in
             self?.handleTabChange(to: tab)
         }
 
-        customHeaderView.configure(
-            name: league.name,
-            countryName: league.country?.name ?? "",
-            imageUrl: league.logoUrl
-        )
+        /*customHeaderView.configure(
+            name: teamViewModel.team?.name ?? "",
+            countryName: teamViewModel.team?.country?.name ?? "",
+            imageUrl: teamViewModel.team?.logoUrl ?? ""
+        )*/
         
-        handleTabChange(to: .matches)
-        observeTournamentMatchesViewModel()
-        tournamentMatchesViewModel.loadTournamentMatches()
+        handleTabChange(to: .details)
+        
     }
     
-    private var hasLaidOutSubviewsOnce = false
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        if !hasLaidOutSubviewsOnce {
-            hasLaidOutSubviewsOnce = true
-            if let scrollView = (currentContentView as? TournamentMatchesView)?.scrollView {
-                scrollViewDidScroll(scrollView)
-            }
-        }
-    }
-    
-    @objc func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        ScrollBehaviorHelper.handleScroll(
-            scrollView: scrollView,
-            maxHeaderOffset: 72,
-            delegate: self
-        )
-    }
-    
-    //loading data
-    private func observeTournamentMatchesViewModel() {
-        tournamentMatchesViewModel.$state
+    private func observeViewModel() {
+        teamViewModel.$state
             .receive(on: DispatchQueue.main)
             .sink { [weak self] state in
                 self?.handleState(state)
@@ -96,40 +78,50 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
             .store(in: &cancellables)
     }
     
-    private func handleState(_ state: State<[Event]>) {
-        handleState(state,
-            onLoading: { showLoadingState() },
-            onLoaded: { events in
-            showData()
-                showLoadedState()
-            },
-            onError: { showErrorState(message: "No data available.") },
-            onIdle: { self.hideError() }
-        )
-    }
-    
-    private func observeTournamentStandingsViewModel(viewModel: TournamentStandingsViewModel, view: TournamentStandingsView) {
-        viewModel.$state
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] state in
-                self?.handleStandingsState(state, view: view)
+    private var hasLaidOutSubviewsOnce = false
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if !hasLaidOutSubviewsOnce {
+            hasLaidOutSubviewsOnce = true
+            if let scrollView = (currentContentView as? TeamDetailsView)?.scrollView {
+                scrollViewDidScroll(scrollView)
             }
-            .store(in: &cancellables)
+        }
     }
-    
-    private func handleStandingsState(_ state: State<[Standings]>, view: TournamentStandingsView) {
+
+    @objc func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        ScrollBehaviorHelper.handleScroll(
+            scrollView: scrollView,
+            maxHeaderOffset: 72,
+            delegate: self
+        )
+    }
+
+    private func handleState(_ state: State<(TeamInfo?, [Player], [League])>) {
         handleState(state,
             onLoading: { showLoadingState() },
-            onLoaded: { standings in
-            view.configure(standings: standings, sport: SportSelectionManager.shared.selectedSport)
-            showData()
-                showLoadedState()
+            onLoaded: { [weak self] (teamInfo, players, tournaments) in
+                guard let self = self, let teamInfo = teamInfo else { return }
+                self.showData()
+                self.showLoadedState()
+
+                self.navigationView.configureTitle(teamInfo.team.name)
+                self.navigationView.setTitleAlpha(0)
+
+                self.customHeaderView.configure(
+                    name: teamInfo.team.name,
+                    countryName: teamInfo.team.country?.name ?? "",
+                    imageUrl: teamInfo.team.logoUrl
+                )
+            
+            self.teamDetailsView.configure(with: teamInfo, and: players, tournaments: tournaments)
+
             },
-            onError: { showErrorState(message: "No data available.") },
+            onError: { showErrorState(message: "Failed to load team data.") },
             onIdle: { self.hideError() }
         )
     }
-        
+
     private func showData() {
         activityIndicator.stopAnimating()
         errorLabel.isHidden = true
@@ -139,32 +131,17 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
         currentContentView?.removeFromSuperview()
         errorLabel.isHidden = true
         switch tab {
-        case .matches:
-            let matchesView = TournamentMatchesView()
-            matchesView.configure(with: tournamentMatchesViewModel)
-            
-            (matchesView as TournamentMatchesView).scrollView.delegate = self
-            
-            contentView.addSubview(matchesView)
-            matchesView.snp.makeConstraints { $0.edges.equalToSuperview() }
-            currentContentView = matchesView
-            
-            observeTournamentMatchesViewModel()
-            tournamentMatchesViewModel.loadTournamentMatches()
-
-        case .standings:
-            let standingsView = TournamentStandingsView()
-            contentView.addSubview(standingsView)
-            standingsView.snp.makeConstraints { $0.edges.equalToSuperview() }
-            currentContentView = standingsView
-            
-            standingsView.externalScrollDelegate = self
-
-            observeTournamentStandingsViewModel(viewModel: tournamentStandingsViewModel, view: standingsView)
-            tournamentStandingsViewModel.loadTournamentStandings()
+        case .details:
+            teamDetailsView.isHidden = false
+            contentView.bringSubviewToFront(teamDetailsView)
+            currentContentView = teamDetailsView
+            (teamDetailsView as TeamDetailsView).scrollView.delegate = self
+        case .squad:
+            infoLabel.text = "Squad"
         default:
             break
         }
+    
     }
     
     //styles and setup func
@@ -178,10 +155,13 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
         topBackgroundView = addTopBackgroundView()
         view.addSubview(customHeaderView)
         view.addSubview(customTabsView)
+        teamDetailsView.isHidden = true
         view.addSubview(contentView)
         view.addSubview(navigationView)
         view.addSubview(activityIndicator)
         view.addSubview(errorLabel)
+        
+        contentView.addSubview(teamDetailsView)
     }
     
     func styleViews() {
@@ -193,6 +173,12 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
         errorLabel.font = .regular14
         errorLabel.textAlignment = .center
         errorLabel.isHidden = true
+        
+        infoLabel.font = .regularBold20
+        infoLabel.textColor = .primaryBlack
+        infoLabel.textAlignment = .center
+        infoLabel.numberOfLines = 0
+
     }
     
     func setupConstraints() {
@@ -206,12 +192,14 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
             $0.top.equalTo(navigationView.snp.bottom)
             $0.leading.trailing.equalToSuperview()
             customHeaderHeightConstraint = $0.height.equalTo(72).constraint
+            $0.height.equalTo(72)
         }
 
         customTabsView.snp.makeConstraints {
             customTabsTopConstraint = $0.top.equalTo(customHeaderView.snp.bottom).constraint
             customTabsAltTopConstraint = $0.top.equalTo(navigationView.snp.bottom).constraint
             customTabsAltTopConstraint.deactivate()
+            //$0.top.equalTo(customHeaderView.snp.bottom)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(48)
         }
@@ -219,6 +207,10 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
         contentView.snp.makeConstraints {
             $0.top.equalTo(customTabsView.snp.bottom)
             $0.leading.trailing.bottom.equalToSuperview()
+        }
+        
+        teamDetailsView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
         }
         
         activityIndicator.snp.makeConstraints {

@@ -11,66 +11,66 @@ import SnapKit
 import SofaAcademic
 
 class CustomHeaderView: BaseView {
-    private let leagueLabel = UILabel()
+    private let nameLabel = UILabel()
     private let countryLabel = UILabel()
-    private let leagueImageContainerView = UIView()
-    private let leagueImageView = AsyncImageView()
+    private let imageContainerView = UIView()
+    private let imageView = AsyncImageView()
     
     override func addViews() {
         super.addViews()
-        addSubview(leagueImageContainerView)
-        leagueImageContainerView.addSubview(leagueImageView)
+        addSubview(imageContainerView)
+        imageContainerView.addSubview(imageView)
         addSubview(countryLabel)
-        addSubview(leagueLabel)
+        addSubview(nameLabel)
     }
 
     override func styleViews() {
         self.backgroundColor = .headerBackground
         
-        leagueImageContainerView.backgroundColor = .white
-        leagueImageContainerView.layer.cornerRadius = 8
-        leagueImageContainerView.clipsToBounds = true
+        imageContainerView.backgroundColor = .white
+        imageContainerView.layer.cornerRadius = 8
+        imageContainerView.clipsToBounds = true
 
-        leagueImageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFit
 
         countryLabel.font = .regularBold14
         countryLabel.textColor = .white
         countryLabel.textAlignment = .left
 
-        leagueLabel.font = .regularBold20
-        leagueLabel.textColor = .white
-        leagueLabel.textAlignment = .left
+        nameLabel.font = .regularBold20
+        nameLabel.textColor = .white
+        nameLabel.textAlignment = .left
     }
         
     override func setupConstraints() {
         super.setupConstraints()
-        leagueImageContainerView.snp.makeConstraints {
+        imageContainerView.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(16)
             $0.centerY.equalToSuperview()
             $0.width.height.equalTo(56)
         }
 
-        leagueImageView.snp.makeConstraints {
+        imageView.snp.makeConstraints {
             $0.edges.equalToSuperview().inset(8)
         }
 
-        leagueLabel.snp.makeConstraints {
-            $0.top.equalTo(leagueImageContainerView)
-            $0.leading.equalTo(leagueImageContainerView.snp.trailing).offset(16)
+        nameLabel.snp.makeConstraints {
+            $0.top.equalTo(imageContainerView)
+            $0.leading.equalTo(imageContainerView.snp.trailing).offset(16)
             $0.trailing.lessThanOrEqualToSuperview().inset(16)
         }
 
         countryLabel.snp.makeConstraints {
-            $0.top.equalTo(leagueLabel.snp.bottom).offset(4)
-            $0.leading.equalTo(leagueLabel)
-            $0.trailing.equalTo(leagueLabel)
+            $0.top.equalTo(nameLabel.snp.bottom).offset(4)
+            $0.leading.equalTo(nameLabel)
+            $0.trailing.equalTo(nameLabel)
             $0.bottom.lessThanOrEqualToSuperview().inset(8)
         }
     }
     
-    func configure(leagueName: String, countryName: String, leagueImageUrl: String) {
-        leagueLabel.text = leagueName
+    func configure(name: String, countryName: String, imageUrl: String) {
+        nameLabel.text = name
         countryLabel.text = countryName
-        leagueImageView.setImage(from: leagueImageUrl)
+        imageView.setImage(from: imageUrl)
     }
 }

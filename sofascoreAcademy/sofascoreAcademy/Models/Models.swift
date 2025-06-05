@@ -25,7 +25,7 @@ struct League: Decodable {
     public let name: String
     public let country: Country?
     public let logoUrl: String
-    public let seasonId: Int
+    public let seasonId: Int?
 }
 
 enum EventStatus: String, Decodable {

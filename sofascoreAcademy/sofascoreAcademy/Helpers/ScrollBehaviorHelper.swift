@@ -11,12 +11,12 @@ import SnapKit
 
 protocol ScrollAnimatableViewController: AnyObject {
     var customHeaderHeightConstraint: Constraint! { get }
-    var tournamentTabsTopConstraint: Constraint! { get }
-    var tournamentTabsAltTopConstraint: Constraint! { get }
+    var customTabsTopConstraint: Constraint! { get }
+    var customTabsAltTopConstraint: Constraint! { get }
 
     var navigationView: CustomNavigationView { get }
     var customHeaderView: CustomHeaderView { get }
-    var tournamentTabsView: TournamentTabsView { get }
+    var customTabsView: CustomTabsView { get }
 }
 
 class ScrollBehaviorHelper {
@@ -31,14 +31,14 @@ class ScrollBehaviorHelper {
         delegate.customHeaderHeightConstraint.update(offset: maxHeaderOffset - clampedOffset)
 
         if clampedOffset >= maxHeaderOffset {
-            if delegate.tournamentTabsTopConstraint.isActive {
-                delegate.tournamentTabsTopConstraint.deactivate()
-                delegate.tournamentTabsAltTopConstraint.activate()
+            if delegate.customTabsTopConstraint.isActive {
+                delegate.customTabsTopConstraint.deactivate()
+                delegate.customTabsAltTopConstraint.activate()
             }
         } else {
-            if delegate.tournamentTabsAltTopConstraint.isActive {
-                delegate.tournamentTabsAltTopConstraint.deactivate()
-                delegate.tournamentTabsTopConstraint.activate()
+            if delegate.customTabsAltTopConstraint.isActive {
+                delegate.customTabsAltTopConstraint.deactivate()
+                delegate.customTabsTopConstraint.activate()
             }
         }
 

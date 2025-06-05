@@ -27,8 +27,16 @@ struct EventDetailsViewModel {
         return event.startTimestamp.asDate.hourMinute
     }
     
+    var homeTeamId: Int {
+        return event.homeTeam.id
+    }
+    
     var homeTeamName: String {
         return event.homeTeam.name
+    }
+    
+    var awayTeamId: Int {
+        return event.awayTeam.id
     }
     
     var awayTeamName: String {

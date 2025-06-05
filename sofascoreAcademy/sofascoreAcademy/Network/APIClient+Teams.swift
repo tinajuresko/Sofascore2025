@@ -9,7 +9,7 @@ import Foundation
 import Network
 
 extension APIClient {
-    static func getTeam(by id: Int) async throws -> Team {
+    static func getTeam(by id: Int) async throws -> TeamInfo {
         return try await fetch(
             path: "/teams/\(id)"
         )

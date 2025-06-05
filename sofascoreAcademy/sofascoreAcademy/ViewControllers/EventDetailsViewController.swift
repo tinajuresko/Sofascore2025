@@ -42,6 +42,8 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol, LoadableVi
         
         observeIncidentsViewModel()
         incidentsViewModel.loadIncidents()
+        
+        headerView.delegate = self
     }
     private func observeIncidentsViewModel() {
         incidentsViewModel.$state
@@ -130,5 +132,14 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol, LoadableVi
         errorLabel.font = .regular14
         errorLabel.textAlignment = .center
         errorLabel.isHidden = true
+    }
+}
+
+extension EventDetailsViewController: EventDetailsHeaderViewDelegate {
+    func didTapTeam(isHomeTeam: Bool) {
+        let teamId = isHomeTeam ? selectedEvent.homeTeamId : selectedEvent.awayTeamId
+        let teamViewModel = TeamViewModel(teamId: teamId)
+        let teamVC = TeamViewController(teamViewModel: teamViewModel)
+        navigationController?.pushViewController(teamVC, animated: true)
     }
 }

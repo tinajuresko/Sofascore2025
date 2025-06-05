@@ -10,6 +10,10 @@ import UIKit
 import SnapKit
 import SofaAcademic
 
+protocol EventDetailsHeaderViewDelegate: AnyObject {
+    func didTapTeam(isHomeTeam: Bool)
+}
+
 class EventDetailsHeaderView: BaseView {
     
     private let homeTeamLogoImageView = AsyncImageView()
@@ -18,6 +22,8 @@ class EventDetailsHeaderView: BaseView {
     private let awayTeamLabel = UILabel()
     private let eventDetailLabel = UILabel()
     private let eventStatusLabel = UILabel()
+    
+    weak var delegate: EventDetailsHeaderViewDelegate?
         
     override func addViews() {
         super.addViews()
@@ -127,5 +133,25 @@ class EventDetailsHeaderView: BaseView {
             eventStatusLabel.text = selectedEvent.eventDetailsStatusText
         }
         eventStatusLabel.textColor = selectedEvent.eventDetailsStatusColor
+        
+        setupGestureRecognizers()
+    }
+    
+    override func setupGestureRecognizers() {
+        let homeTap = UITapGestureRecognizer(target: self, action: #selector(homeTeamTapped))
+        homeTeamLogoImageView.isUserInteractionEnabled = true
+        homeTeamLogoImageView.addGestureRecognizer(homeTap)
+
+        let awayTap = UITapGestureRecognizer(target: self, action: #selector(awayTeamTapped))
+        awayTeamLogoImageView.isUserInteractionEnabled = true
+        awayTeamLogoImageView.addGestureRecognizer(awayTap)
+    }
+    
+    @objc private func homeTeamTapped() {
+        delegate?.didTapTeam(isHomeTeam: true)
+    }
+
+    @objc private func awayTeamTapped() {
+        delegate?.didTapTeam(isHomeTeam: false)
     }
 }
