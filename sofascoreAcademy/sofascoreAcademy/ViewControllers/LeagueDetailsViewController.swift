@@ -143,7 +143,7 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
             let matchesView = TournamentMatchesView()
             matchesView.configure(with: tournamentMatchesViewModel)
             
-            (matchesView as TournamentMatchesView).scrollView.delegate = self
+            matchesView.scrollView.delegate = self
             
             contentView.addSubview(matchesView)
             matchesView.snp.makeConstraints { $0.edges.equalToSuperview() }

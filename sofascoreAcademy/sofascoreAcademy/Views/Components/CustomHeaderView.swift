@@ -62,8 +62,7 @@ class CustomHeaderView: BaseView {
 
         countryLabel.snp.makeConstraints {
             $0.top.equalTo(nameLabel.snp.bottom).offset(4)
-            $0.leading.equalTo(nameLabel)
-            $0.trailing.equalTo(nameLabel)
+            $0.leading.trailing.equalTo(nameLabel)
             $0.bottom.lessThanOrEqualToSuperview().inset(8)
         }
     }

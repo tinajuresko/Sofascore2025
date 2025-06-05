@@ -30,6 +30,7 @@ class TeamViewController: UIViewController, BaseViewProtocol, LoadableView, Scro
     
     private let infoLabel = UILabel()
     private let teamDetailsView = TeamDetailsView()
+    private let teamSquadView = TeamSquadView()
 
 
     init(teamViewModel: TeamViewModel) {
@@ -51,19 +52,10 @@ class TeamViewController: UIViewController, BaseViewProtocol, LoadableView, Scro
         observeViewModel()
         teamViewModel.loadTeam()
         
-        /*navigationView.configureTitle(teamViewModel.team?.name ?? "")
-        navigationView.setTitleAlpha(0)*/
-        
         customTabsView.configure(firstTab: .details, secondTab: .squad)
         customTabsView.onTabSelected = { [weak self] tab in
             self?.handleTabChange(to: tab)
         }
-
-        /*customHeaderView.configure(
-            name: teamViewModel.team?.name ?? "",
-            countryName: teamViewModel.team?.country?.name ?? "",
-            imageUrl: teamViewModel.team?.logoUrl ?? ""
-        )*/
         
         handleTabChange(to: .details)
         
@@ -115,6 +107,7 @@ class TeamViewController: UIViewController, BaseViewProtocol, LoadableView, Scro
                 )
             
             self.teamDetailsView.configure(with: teamInfo, and: players, tournaments: tournaments)
+            self.teamSquadView.configure(players: players)
 
             },
             onError: { showErrorState(message: "Failed to load team data.") },
@@ -132,12 +125,27 @@ class TeamViewController: UIViewController, BaseViewProtocol, LoadableView, Scro
         errorLabel.isHidden = true
         switch tab {
         case .details:
+            if teamDetailsView.superview == nil {
+                contentView.addSubview(teamDetailsView)
+                teamDetailsView.snp.makeConstraints { $0.edges.equalToSuperview() }
+            }
             teamDetailsView.isHidden = false
+            teamSquadView.isHidden = true
             contentView.bringSubviewToFront(teamDetailsView)
             currentContentView = teamDetailsView
-            (teamDetailsView as TeamDetailsView).scrollView.delegate = self
+            
+            teamDetailsView.scrollView.delegate = self
         case .squad:
-            infoLabel.text = "Squad"
+            if teamSquadView.superview == nil {
+                contentView.addSubview(teamSquadView)
+                teamSquadView.snp.makeConstraints { $0.edges.equalToSuperview() }
+            }
+            teamSquadView.isHidden = false
+            teamDetailsView.isHidden = true
+            contentView.bringSubviewToFront(teamSquadView)
+            currentContentView = teamSquadView
+            
+            teamSquadView.externalScrollDelegate = self
         default:
             break
         }
