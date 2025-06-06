@@ -48,17 +48,10 @@ class TeamViewController: UIViewController, BaseViewProtocol, LoadableView, Scro
         setupConstraints()
         styleViews()
         setupNavigationBar()
+        setupTabs()
         
         observeViewModel()
         teamViewModel.loadTeam()
-        
-        customTabsView.configure(firstTab: .details, secondTab: .squad)
-        customTabsView.onTabSelected = { [weak self] tab in
-            self?.handleTabChange(to: tab)
-        }
-        
-        handleTabChange(to: .details)
-        
     }
     
     private func observeViewModel() {
@@ -106,9 +99,8 @@ class TeamViewController: UIViewController, BaseViewProtocol, LoadableView, Scro
                     imageUrl: teamInfo.team.logoUrl
                 )
             
-            self.teamDetailsView.configure(with: teamInfo, and: players, tournaments: tournaments)
-            self.teamSquadView.configure(players: players)
-
+                self.teamDetailsView.configure(with: teamInfo, and: players, tournaments: tournaments)
+                self.teamSquadView.configure(players: players)
             },
             onError: { showErrorState(message: "Failed to load team data.") },
             onIdle: { self.hideError() }
@@ -149,14 +141,21 @@ class TeamViewController: UIViewController, BaseViewProtocol, LoadableView, Scro
         default:
             break
         }
-    
     }
     
-    //styles and setup func
+    // MARK: Setting up and manipulating views
     func setupNavigationBar() {
         navigationView.onBackTapped = { [weak self] in
             self?.navigationController?.popViewController(animated: true)
         }
+    }
+
+    func setupTabs() {
+        customTabsView.configure(firstTab: .details, secondTab: .squad)
+        customTabsView.onTabSelected = { [weak self] tab in
+            self?.handleTabChange(to: tab)
+        }
+        handleTabChange(to: .details)
     }
     
     func addViews() {
@@ -186,7 +185,6 @@ class TeamViewController: UIViewController, BaseViewProtocol, LoadableView, Scro
         infoLabel.textColor = .primaryBlack
         infoLabel.textAlignment = .center
         infoLabel.numberOfLines = 0
-
     }
     
     func setupConstraints() {
@@ -207,7 +205,6 @@ class TeamViewController: UIViewController, BaseViewProtocol, LoadableView, Scro
             customTabsTopConstraint = $0.top.equalTo(customHeaderView.snp.bottom).constraint
             customTabsAltTopConstraint = $0.top.equalTo(navigationView.snp.bottom).constraint
             customTabsAltTopConstraint.deactivate()
-            //$0.top.equalTo(customHeaderView.snp.bottom)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(48)
         }

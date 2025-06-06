@@ -260,7 +260,6 @@ class TeamDetailsView: BaseView {
         }
 
         venueCityLabel.snp.makeConstraints {
-            //$0.leading.equalTo(venueNameLabel.snp.trailing).offset(8)
             $0.trailing.equalToSuperview().inset(16)
             $0.height.equalTo(16)
             $0.centerY.equalTo(venueNameLabel)

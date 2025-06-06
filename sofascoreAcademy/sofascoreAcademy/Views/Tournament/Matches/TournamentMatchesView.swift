@@ -42,9 +42,6 @@ class TournamentMatchesView: BaseView {
     }
     
     private func setupTableView() {
-        //tableView.snp.makeConstraints { $0.edges.equalToSuperview() }
-        //tableView.dataSource = self
-        //tableView.delegate = self
         tableView.register(MatchTableViewCell.self, forCellReuseIdentifier: "MatchCell")
     }
         

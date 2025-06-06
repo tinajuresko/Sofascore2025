@@ -18,16 +18,30 @@ class AmFootballStandingsCell: UITableViewCell {
     private let drawsLabel = UILabel()
     private let lossesLabel = UILabel()
     private let percentageLabel = UILabel()
+    private var standing: Standings?
+    
+    weak var delegate: StandingsCellDelegate?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addViews()
         styleViews()
         setupConstraints()
+        setupGesture()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupGesture() {
+        teamLabel.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(teamLabelTapped))
+        teamLabel.addGestureRecognizer(tap)
+    }
+
+    @objc private func teamLabelTapped() {
+        delegate?.didTapTeamLabel(teamId: standing?.team.id)
     }
 
     private func addViews() {
@@ -108,12 +122,13 @@ class AmFootballStandingsCell: UITableViewCell {
     }
 
     func configure(with standing: Standings) {
+        self.standing = standing
         indexLabel.text = "\(standing.position)"
         teamLabel.text = standing.team.name
         matchesLabel.text = "\(standing.matches)"
         winsLabel.text = "\(standing.wins)"
         drawsLabel.text = "\(standing.draws)"
         lossesLabel.text = "\(standing.losses)"
-        percentageLabel.text = "\(standing.percentage ?? 0)"
+        percentageLabel.text = String(format: "%.2f", standing.percentage ?? 0)
     }
 }

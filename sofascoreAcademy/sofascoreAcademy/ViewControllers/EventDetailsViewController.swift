@@ -39,11 +39,9 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol, LoadableVi
         styleViews()
         setupNavigationBar()
         headerView.configure(with: selectedEvent)
-        
+        headerView.delegate = self
         observeIncidentsViewModel()
         incidentsViewModel.loadIncidents()
-        
-        headerView.delegate = self
     }
     private func observeIncidentsViewModel() {
         incidentsViewModel.$state
@@ -135,6 +133,7 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol, LoadableVi
     }
 }
 
+// MARK: EventDetailsHeaderViewDelegate
 extension EventDetailsViewController: EventDetailsHeaderViewDelegate {
     func didTapTeam(isHomeTeam: Bool) {
         let teamId = isHomeTeam ? selectedEvent.homeTeamId : selectedEvent.awayTeamId

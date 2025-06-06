@@ -10,12 +10,17 @@ import UIKit
 import SnapKit
 import SofaAcademic
 
+protocol TournamentStandingsViewDelegate: AnyObject {
+    func didTapTeamLabel(teamId: Int?)
+}
+
 class TournamentStandingsView: BaseView {
     private let tableView = UITableView()
     private var standings: [Standings] = []
-    weak var externalScrollDelegate: UIScrollViewDelegate?
-    
     private var selectedSport: SportType?
+    
+    weak var externalScrollDelegate: UIScrollViewDelegate?
+    weak var delegate: TournamentStandingsViewDelegate?
     
     override func addViews() {
         super.addViews()
@@ -41,9 +46,6 @@ class TournamentStandingsView: BaseView {
     private func setupTableView() {
         addSubview(tableView)
         tableView.snp.makeConstraints { $0.edges.equalToSuperview() }
-
-        tableView.dataSource = self
-        tableView.delegate = self
 
         SportType.allCases
             .map { StandingsCellType.from(sport: $0) }
@@ -74,18 +76,22 @@ extension TournamentStandingsView: UITableViewDataSource, UITableViewDelegate {
         let sport = selectedSport
         let cellType = StandingsCellType.from(sport: sport ?? .football)
         let standing = standings[indexPath.row]
+        let leader = standings[0]
         
         let cell = tableView.dequeueReusableCell(withIdentifier: cellType.reuseIdentifier, for: indexPath)
 
         switch cell {
         case let footballCell as FootballStandingsCell:
             footballCell.configure(with: standing)
+            footballCell.delegate = self
             return footballCell
         case let basketballCell as BasketballStandingsCell:
-            basketballCell.configure(with: standing)
+            basketballCell.configure(with: standing, leader: leader)
+            basketballCell.delegate = self
             return basketballCell
         case let amFootballCell as AmFootballStandingsCell:
             amFootballCell.configure(with: standing)
+            amFootballCell.delegate = self
             return amFootballCell
         default:
             return cell
@@ -111,5 +117,12 @@ extension TournamentStandingsView: UITableViewDataSource, UITableViewDelegate {
 extension TournamentStandingsView: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         externalScrollDelegate?.scrollViewDidScroll?(scrollView)
+    }
+}
+
+// MARK: StandingsCellDelegate
+extension TournamentStandingsView: StandingsCellDelegate {
+    func didTapTeamLabel(teamId: Int?) {
+        delegate?.didTapTeamLabel(teamId: teamId)
     }
 }

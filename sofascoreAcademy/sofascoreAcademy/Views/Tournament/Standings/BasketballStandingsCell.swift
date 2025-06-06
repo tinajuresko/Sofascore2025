@@ -20,16 +20,30 @@ class BasketballStandingsCell: UITableViewCell {
     private let strLabel = UILabel()
     private let gbLabel = UILabel()
     private let percentageLabel = UILabel()
+    private var standing: Standings?
+    
+    weak var delegate: StandingsCellDelegate?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addViews()
         styleViews()
         setupConstraints()
+        setupGesture()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupGesture() {
+        teamLabel.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(teamLabelTapped))
+        teamLabel.addGestureRecognizer(tap)
+    }
+
+    @objc private func teamLabelTapped() {
+        delegate?.didTapTeamLabel(teamId: standing?.team.id)
     }
 
     private func addViews() {
@@ -124,7 +138,8 @@ class BasketballStandingsCell: UITableViewCell {
         }
     }
 
-    func configure(with standing: Standings) {
+    func configure(with standing: Standings, leader: Standings) {
+        self.standing = standing
         indexLabel.text = "\(standing.position)"
         teamLabel.text = standing.team.name
         matchesLabel.text = "\(standing.matches)"
@@ -132,7 +147,12 @@ class BasketballStandingsCell: UITableViewCell {
         lossesLabel.text = "\(standing.losses)"
         diffLabel.text = "\((standing.scoreFor ?? 0) - (standing.scoreAgainst ?? 0))"
         strLabel.text = "?"
-        gbLabel.text = "?"
-        percentageLabel.text = "\(standing.percentage ?? 0)"
+        
+        let winsDiff = leader.wins - standing.wins
+        let lossesDiff = standing.losses - leader.losses
+        let gamesBehind = Double(winsDiff + lossesDiff) / 2.0
+            
+        gbLabel.text = String(format: "%.1f", gamesBehind)
+        percentageLabel.text = String(format: "%.2f", standing.percentage ?? 0)
     }
 }

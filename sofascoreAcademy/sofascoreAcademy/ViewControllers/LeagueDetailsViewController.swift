@@ -28,6 +28,7 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
     var customTabsAltTopConstraint: Constraint!
     
     private var cancellables = Set<AnyCancellable>()
+    private var hasLaidOutSubviewsOnce = false
     let activityIndicator = UIActivityIndicatorView(style: .medium)
     let errorLabel = UILabel()
 
@@ -48,26 +49,13 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
         setupConstraints()
         styleViews()
         setupNavigationBar()
-        navigationView.configureTitle(league.name)
-        navigationView.setTitleAlpha(0)
+        setupHeader()
+        setupTabs()
         
-        customTabsView.configure(firstTab: .matches, secondTab: .standings)
-        customTabsView.onTabSelected = { [weak self] tab in
-            self?.handleTabChange(to: tab)
-        }
-
-        customHeaderView.configure(
-            name: league.name,
-            countryName: league.country?.name ?? "",
-            imageUrl: league.logoUrl
-        )
-        
-        handleTabChange(to: .matches)
         observeTournamentMatchesViewModel()
         tournamentMatchesViewModel.loadTournamentMatches()
     }
     
-    private var hasLaidOutSubviewsOnce = false
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         if !hasLaidOutSubviewsOnce {
@@ -86,7 +74,7 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
         )
     }
     
-    //loading data
+    // MARK: State handling
     private func observeTournamentMatchesViewModel() {
         tournamentMatchesViewModel.$state
             .receive(on: DispatchQueue.main)
@@ -154,6 +142,8 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
 
         case .standings:
             let standingsView = TournamentStandingsView()
+            standingsView.delegate = self
+
             contentView.addSubview(standingsView)
             standingsView.snp.makeConstraints { $0.edges.equalToSuperview() }
             currentContentView = standingsView
@@ -167,11 +157,29 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
         }
     }
     
-    //styles and setup func
+    // MARK: Setting up and manipulating views
     func setupNavigationBar() {
         navigationView.onBackTapped = { [weak self] in
             self?.navigationController?.popViewController(animated: true)
         }
+        navigationView.configureTitle(league.name)
+        navigationView.setTitleAlpha(0)
+    }
+    
+    func setupTabs() {
+        customTabsView.configure(firstTab: .matches, secondTab: .standings)
+        customTabsView.onTabSelected = { [weak self] tab in
+            self?.handleTabChange(to: tab)
+        }
+        handleTabChange(to: .matches)
+    }
+    
+    func setupHeader() {
+        customHeaderView.configure(
+            name: league.name,
+            countryName: league.country?.name ?? "",
+            imageUrl: league.logoUrl
+        )
     }
     
     func addViews() {
@@ -228,5 +236,15 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
         errorLabel.snp.makeConstraints {
             $0.center.equalToSuperview()
         }
+    }
+}
+
+// MARK: TournamentStandingsViewDelegate
+extension LeagueDetailsViewController: TournamentStandingsViewDelegate {
+    func didTapTeamLabel(teamId: Int?) {
+        guard let id = teamId else { return }
+        let teamViewModel = TeamViewModel(teamId: id)
+        let teamVC = TeamViewController(teamViewModel: teamViewModel)
+        navigationController?.pushViewController(teamVC, animated: true)
     }
 }
