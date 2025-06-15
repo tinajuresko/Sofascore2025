@@ -126,7 +126,7 @@ class IncidentCell: UITableViewCell {
         
         scoreLabel.isHidden = (incident.type != .goal)
         if incident.type == .goal {
-            scoreLabel.text = incident.score
+            scoreLabel.text = incident.score ?? "-"
         }
 
         if !currentConstraintsSet {
