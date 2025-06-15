@@ -13,3 +13,14 @@ enum State<T> {
     case loading
     case error
 }
+
+extension State {
+    var isIdleOrError: Bool {
+        switch self {
+        case .idle, .error:
+            return true
+        default:
+            return false
+        }
+    }
+}

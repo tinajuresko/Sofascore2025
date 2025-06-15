@@ -37,7 +37,8 @@ class TeamDetailsView: BaseView {
     
     private let tournamentsTitle = UILabel()
     private let tournamentsContainer = UIView()
-    
+    private let noTournamentsLabel = UILabel()
+
     private let venueTitle = UILabel()
     private let venueNameLabel = UILabel()
     private let venueCityLabel = UILabel()
@@ -88,6 +89,7 @@ class TeamDetailsView: BaseView {
         // Tournaments
         tournamentsContainer.addSubview(tournamentsTitle)
         tournamentsContainer.addSubview(collectionView)
+        tournamentsContainer.addSubview(noTournamentsLabel)
     
         // Venue container
         venueContainer.addSubview(venueTitle)
@@ -154,6 +156,12 @@ class TeamDetailsView: BaseView {
             $0.textColor = .primaryBlack
             $0.textAlignment = .center
         }
+        
+        noTournamentsLabel.text = "No tournaments"
+        noTournamentsLabel.textAlignment = .center
+        noTournamentsLabel.font = .regular12
+        noTournamentsLabel.textColor = .secondaryGray
+        noTournamentsLabel.isHidden = true
     }
 
     override func setupConstraints() {
@@ -243,6 +251,12 @@ class TeamDetailsView: BaseView {
             collectionViewHeightConstraint = $0.height.equalTo(100).constraint
         }
         
+        noTournamentsLabel.snp.makeConstraints {
+            $0.top.equalTo(tournamentsTitle.snp.bottom).offset(4)
+            $0.leading.trailing.equalToSuperview().inset(16)
+            $0.bottom.equalToSuperview().inset(8)
+        }
+        
         // Venue layout
         venueTitle.snp.makeConstraints {
             $0.top.equalToSuperview().offset(16)
@@ -293,6 +307,8 @@ class TeamDetailsView: BaseView {
         foreignProgressView.progress = CGFloat(ratio)
         
         self.tournaments = tournaments
+        collectionView.isHidden = tournaments.isEmpty
+        noTournamentsLabel.isHidden = !tournaments.isEmpty
         collectionView.reloadData()
         updateCollectionViewHeight()
     }

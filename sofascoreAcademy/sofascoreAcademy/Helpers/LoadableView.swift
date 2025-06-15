@@ -45,6 +45,11 @@ extension LoadableView {
         hideError()
     }
     
+    func showData() {
+        activityIndicator.stopAnimating()
+        errorLabel.isHidden = true
+    }
+    
     func handleState<T>(_ state: State<T>,
                         onLoading: () -> Void,
                         onLoaded: (T) -> Void,

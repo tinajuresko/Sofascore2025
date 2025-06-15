@@ -15,7 +15,7 @@ class TournamentMatchesView: BaseView {
     private let tableView = UITableView()
     private var viewModel: TournamentMatchesViewModel!
     private var cancellables = Set<AnyCancellable>()
-    
+    weak var externalScrollDelegate: UIScrollViewDelegate?
     var scrollView: UIScrollView {
         return tableView
     }
@@ -29,7 +29,6 @@ class TournamentMatchesView: BaseView {
         backgroundColor = .containerBackground
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
-        tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 56
 
         setupTableView()
@@ -111,5 +110,12 @@ extension TournamentMatchesView: UITableViewDataSource, UITableViewDelegate {
             cell.configure(with: matchViewModel)
             return cell
         }
+    }
+}
+
+// MARK: UIScrollViewDelegate
+extension TournamentMatchesView: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        externalScrollDelegate?.scrollViewDidScroll?(scrollView)
     }
 }

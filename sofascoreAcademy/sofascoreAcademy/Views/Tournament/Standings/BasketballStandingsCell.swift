@@ -146,7 +146,7 @@ class BasketballStandingsCell: UITableViewCell {
         winsLabel.text = "\(standing.wins)"
         lossesLabel.text = "\(standing.losses)"
         diffLabel.text = "\((standing.scoreFor ?? 0) - (standing.scoreAgainst ?? 0))"
-        strLabel.text = "?"
+        strLabel.text = "-"
         
         let winsDiff = leader.wins - standing.wins
         let lossesDiff = standing.losses - leader.losses

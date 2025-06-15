@@ -11,51 +11,30 @@ import SofaAcademic
 import SnapKit
 import Combine
 
-class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableView, ScrollAnimatableViewController, UIScrollViewDelegate {
+class LeagueDetailsViewController: BaseTabViewController, UIScrollViewDelegate, LoadableView {
     private let league: League
     private let tournamentMatchesViewModel: TournamentMatchesViewModel
     private let tournamentStandingsViewModel: TournamentStandingsViewModel
-    
-    private var topBackgroundView: TopBackgroundView!
-    private let contentView = UIView()
-    private var currentContentView: UIView?
-    var customTabsView = CustomTabsView()
-    var navigationView = CustomNavigationView()
-    var customHeaderView = CustomHeaderView()
-    
-    var customHeaderHeightConstraint: Constraint!
-    var customTabsTopConstraint: Constraint!
-    var customTabsAltTopConstraint: Constraint!
+
+    private let matchesView = TournamentMatchesView()
+    private let standingsView = TournamentStandingsView()
     
     private var cancellables = Set<AnyCancellable>()
-    private var hasLaidOutSubviewsOnce = false
-    let activityIndicator = UIActivityIndicatorView(style: .medium)
-    let errorLabel = UILabel()
+
+    private var currentTab: TabType = .matches
 
     init(league: League) {
         self.league = league
         self.tournamentMatchesViewModel = TournamentMatchesViewModel(leagueId: league.id)
         self.tournamentStandingsViewModel = TournamentStandingsViewModel(leagueId: league.id)
-        super.init(nibName: nil, bundle: nil)
+        super.init()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        addViews()
-        setupConstraints()
-        styleViews()
-        setupNavigationBar()
-        setupHeader()
-        setupTabs()
-        
-        observeTournamentMatchesViewModel()
-        tournamentMatchesViewModel.loadTournamentMatches()
-    }
-    
+    private var hasLaidOutSubviewsOnce = false
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         if !hasLaidOutSubviewsOnce {
@@ -65,181 +44,151 @@ class LeagueDetailsViewController: UIViewController, BaseViewProtocol, LoadableV
             }
         }
     }
-    
-    @objc func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        ScrollBehaviorHelper.handleScroll(
-            scrollView: scrollView,
-            maxHeaderOffset: 72,
-            delegate: self
-        )
-    }
-    
-    // MARK: State handling
-    private func observeTournamentMatchesViewModel() {
-        tournamentMatchesViewModel.$state
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] state in
-                self?.handleState(state)
-            }
-            .store(in: &cancellables)
-    }
-    
-    private func handleState(_ state: State<[Event]>) {
-        handleState(state,
-            onLoading: { showLoadingState() },
-            onLoaded: { events in
-            showData()
-                showLoadedState()
-            },
-            onError: { showErrorState(message: "No data available.") },
-            onIdle: { self.hideError() }
-        )
-    }
-    
-    private func observeTournamentStandingsViewModel(viewModel: TournamentStandingsViewModel, view: TournamentStandingsView) {
-        viewModel.$state
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] state in
-                self?.handleStandingsState(state, view: view)
-            }
-            .store(in: &cancellables)
-    }
-    
-    private func handleStandingsState(_ state: State<[Standings]>, view: TournamentStandingsView) {
-        handleState(state,
-            onLoading: { showLoadingState() },
-            onLoaded: { standings in
-            view.configure(standings: standings, sport: SportSelectionManager.shared.selectedSport)
-            showData()
-                showLoadedState()
-            },
-            onError: { showErrorState(message: "No data available.") },
-            onIdle: { self.hideError() }
-        )
-    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
-    private func showData() {
-        activityIndicator.stopAnimating()
-        errorLabel.isHidden = true
-    }
-    
-    private func handleTabChange(to tab: TabType) {
-        currentContentView?.removeFromSuperview()
-        errorLabel.isHidden = true
-        switch tab {
-        case .matches:
-            let matchesView = TournamentMatchesView()
-            matchesView.configure(with: tournamentMatchesViewModel)
-            
-            matchesView.scrollView.delegate = self
-            
-            contentView.addSubview(matchesView)
-            matchesView.snp.makeConstraints { $0.edges.equalToSuperview() }
-            currentContentView = matchesView
-            
-            observeTournamentMatchesViewModel()
-            tournamentMatchesViewModel.loadTournamentMatches()
+        setupHeaderView()
+        setupTabs()
+        setupNavigationBar()
 
-        case .standings:
-            let standingsView = TournamentStandingsView()
-            standingsView.delegate = self
-
-            contentView.addSubview(standingsView)
-            standingsView.snp.makeConstraints { $0.edges.equalToSuperview() }
-            currentContentView = standingsView
-            
-            standingsView.externalScrollDelegate = self
-
-            observeTournamentStandingsViewModel(viewModel: tournamentStandingsViewModel, view: standingsView)
-            tournamentStandingsViewModel.loadTournamentStandings()
-        default:
-            break
-        }
-    }
-    
-    // MARK: Setting up and manipulating views
-    func setupNavigationBar() {
-        navigationView.onBackTapped = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
-        }
         navigationView.configureTitle(league.name)
-        navigationView.setTitleAlpha(0)
+        
+        observeTournamentMatchesViewModel()
+        observeTournamentStandingsViewModel()
+
+        matchesView.externalScrollDelegate = self
+        standingsView.externalScrollDelegate = self
+        standingsView.delegate = self
+
+        loadCurrentTabData()
     }
-    
-    func setupTabs() {
+
+    // MARK: - Tabs
+
+    override func setupTabs() {
         customTabsView.configure(firstTab: .matches, secondTab: .standings)
         customTabsView.onTabSelected = { [weak self] tab in
             self?.handleTabChange(to: tab)
         }
         handleTabChange(to: .matches)
     }
+
+    override func handleTabChange(to tab: TabType) {
+        currentContentView?.removeFromSuperview()
+        errorLabel.isHidden = true
+        currentTab = tab
+        
+        switch tab {
+        case .matches:
+            displayContentView(matchesView)
+            updateUIForMatches()
+            if tournamentMatchesViewModel.state.isIdleOrError {
+                tournamentMatchesViewModel.loadTournamentMatches()
+            }
+        case .standings:
+            displayContentView(standingsView)
+            updateUIForStandings()
+            if tournamentStandingsViewModel.state.isIdleOrError {
+                tournamentStandingsViewModel.loadTournamentStandings()
+            }
+        default:
+            break
+        }
+    }
+
+    private func updateUIForMatches() {
+        let state = tournamentMatchesViewModel.state
+        handleMatchesState(state)
+    }
+
+    private func updateUIForStandings() {
+        let state = tournamentStandingsViewModel.state
+        handleStandingsState(state)
+    }
     
-    func setupHeader() {
+    private func loadCurrentTabData() {
+        switch currentTab {
+        case .matches:
+            tournamentMatchesViewModel.loadTournamentMatches()
+        case .standings:
+            tournamentStandingsViewModel.loadTournamentStandings()
+        default:
+            break
+        }
+    }
+    
+    // MARK: - Header
+
+    func setupHeaderView() {
         customHeaderView.configure(
             name: league.name,
             countryName: league.country?.name ?? "",
             imageUrl: league.logoUrl
         )
     }
-    
-    func addViews() {
-        topBackgroundView = addTopBackgroundView()
-        view.addSubview(customHeaderView)
-        view.addSubview(customTabsView)
-        view.addSubview(contentView)
-        view.addSubview(navigationView)
-        view.addSubview(activityIndicator)
-        view.addSubview(errorLabel)
+
+    // MARK: - ViewModel Observation
+
+    private func observeTournamentMatchesViewModel() {
+        tournamentMatchesViewModel.$state
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] state in
+                guard let self = self else { return }
+                if self.currentTab == .matches {
+                    self.handleMatchesState(state)
+                }
+            }
+            .store(in: &cancellables)
     }
-    
-    func styleViews() {
-        view.backgroundColor = .appBackground
-        
-        activityIndicator.color = .gray
-        activityIndicator.hidesWhenStopped = true
-        errorLabel.textColor = .secondaryGray
-        errorLabel.font = .regular14
-        errorLabel.textAlignment = .center
-        errorLabel.isHidden = true
+
+    private func observeTournamentStandingsViewModel() {
+        tournamentStandingsViewModel.$state
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] state in
+                guard let self = self else { return }
+                if self.currentTab == .standings {
+                    self.handleStandingsState(state)
+                }
+            }
+            .store(in: &cancellables)
     }
-    
-    func setupConstraints() {
-        navigationView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide)
-            $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(48)
-        }
-        
-        customHeaderView.snp.makeConstraints {
-            $0.top.equalTo(navigationView.snp.bottom)
-            $0.leading.trailing.equalToSuperview()
-            customHeaderHeightConstraint = $0.height.equalTo(72).constraint
-        }
 
-        customTabsView.snp.makeConstraints {
-            customTabsTopConstraint = $0.top.equalTo(customHeaderView.snp.bottom).constraint
-            customTabsAltTopConstraint = $0.top.equalTo(navigationView.snp.bottom).constraint
-            customTabsAltTopConstraint.deactivate()
-            $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(48)
-        }
+    private func handleMatchesState(_ state: State<[Event]>) {
+        handleState(state,
+            onLoading: { showLoadingState() },
+            onLoaded: { _ in
+                matchesView.configure(with: tournamentMatchesViewModel)
+                showLoadedState()
+            },
+            onError: {
+                showErrorState(message: "No data available.")
+            },
+            onIdle: {
+                self.hideError()
+            }
+        )
+    }
 
-        contentView.snp.makeConstraints {
-            $0.top.equalTo(customTabsView.snp.bottom)
-            $0.leading.trailing.bottom.equalToSuperview()
-        }
-        
-        activityIndicator.snp.makeConstraints {
-            $0.center.equalToSuperview()
-        }
-
-        errorLabel.snp.makeConstraints {
-            $0.center.equalToSuperview()
-        }
+    private func handleStandingsState(_ state: State<[Standings]>) {
+        handleState(state,
+            onLoading: { showLoadingState() },
+            onLoaded: { standings in
+                standingsView.configure(standings: standings, sport: SportSelectionManager.shared.selectedSport)
+                showLoadedState()
+            },
+            onError: {
+                showErrorState(message: "No data available.")
+            },
+            onIdle: {
+                self.hideError()
+            }
+        )
     }
 }
 
-// MARK: TournamentStandingsViewDelegate
+// MARK: - TournamentStandingsViewDelegate
+
 extension LeagueDetailsViewController: TournamentStandingsViewDelegate {
     func didTapTeamLabel(teamId: Int?) {
         guard let id = teamId else { return }

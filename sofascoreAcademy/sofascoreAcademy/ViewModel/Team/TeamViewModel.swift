@@ -27,7 +27,7 @@ class TeamViewModel: ObservableObject {
                 self.players = try await APIClient.getTeamPlayers(forTeamId: teamId)
                 self.tournaments = try await APIClient.getTeamTournaments(forTeamId: teamId)
 
-                if teamInfo == nil || players.isEmpty || tournaments.isEmpty {
+                if teamInfo == nil {
                     self.state = .error
                 } else {
                     self.state = .loaded((self.teamInfo, self.players, self.tournaments))
