@@ -13,6 +13,7 @@ import SofaAcademic
 import Combine
 
 class LoginViewController: UIViewController, BaseViewProtocol {
+    private let topSpacerView = UIView()
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     private let stackView = UIStackView()
@@ -20,8 +21,8 @@ class LoginViewController: UIViewController, BaseViewProtocol {
     private let textContainerView = UIView()
     private let titleLabel = UILabel()
     private let textLabel = UILabel()
-    private let usernameTextField = UITextField()
-    private let passwordTextField = UITextField()
+    private let usernameTextField = PaddedTextField()
+    private let passwordTextField = PaddedTextField()
     private let errorLabel = UILabel()
     private let loginButton = UIButton()
     
@@ -37,6 +38,8 @@ class LoginViewController: UIViewController, BaseViewProtocol {
         setupConstraints()
         styleViews()
         setupVideoPlayer()
+        
+        navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -61,7 +64,6 @@ class LoginViewController: UIViewController, BaseViewProtocol {
         })
     }
 
-    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         playerLayer?.frame = videoContainerView.bounds
@@ -70,6 +72,7 @@ class LoginViewController: UIViewController, BaseViewProtocol {
     func addViews() {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
+        contentView.addSubview(topSpacerView)
         contentView.addSubview(stackView)
 
         stackView.addArrangedSubview(textContainerView)
@@ -92,9 +95,15 @@ class LoginViewController: UIViewController, BaseViewProtocol {
             $0.edges.equalToSuperview()
             $0.width.equalToSuperview()
         }
+        
+        topSpacerView.snp.makeConstraints {
+            $0.top.leading.trailing.equalToSuperview()
+            $0.height.equalTo(44)
+        }
 
         stackView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.top.equalTo(topSpacerView.snp.bottom)
+            $0.leading.trailing.bottom.equalToSuperview()
         }
 
         titleLabel.snp.makeConstraints {
@@ -138,6 +147,8 @@ class LoginViewController: UIViewController, BaseViewProtocol {
 
     func styleViews() {
         view.backgroundColor = .appBackground
+        scrollView.backgroundColor = .clear
+        contentView.backgroundColor = .clear
         videoContainerView.backgroundColor = .clear
         textContainerView.backgroundColor = .clear
         
@@ -154,20 +165,9 @@ class LoginViewController: UIViewController, BaseViewProtocol {
         textLabel.textAlignment = .center
         textLabel.font = .regular14
       
-        usernameTextField.placeholder = "Username"
-        usernameTextField.backgroundColor = .clear
-        usernameTextField.borderStyle = .roundedRect
-        usernameTextField.font = .regular14
-        usernameTextField.textColor = .secondaryGray
-        usernameTextField.autocapitalizationType = .none
-                
-        passwordTextField.placeholder = "Password"
-        passwordTextField.backgroundColor = .clear
-        passwordTextField.borderStyle = .roundedRect
+        usernameTextField.setPlaceholder("Username", color: .secondaryGray)
+        passwordTextField.setPlaceholder("Password", color: .secondaryGray)
         passwordTextField.isSecureTextEntry = true
-        passwordTextField.font = .regular14
-        passwordTextField.textColor = .secondaryGray
-        passwordTextField.autocapitalizationType = .none
         
         loginButton.setTitle("Login", for: .normal)
         loginButton.backgroundColor = .headerBackground

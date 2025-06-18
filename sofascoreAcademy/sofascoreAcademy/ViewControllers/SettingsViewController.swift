@@ -115,6 +115,8 @@ class SettingsViewController: UIViewController, BaseViewProtocol {
         KeychainManager.shared.delete(forKey: KeysManager.keychainKey)
         
         clearDB()
+        
+        SportSelectionManager.shared.selectSport(.football)
 
         UIApplication.rootVC?.switchTo(.loggedOut)
     }
