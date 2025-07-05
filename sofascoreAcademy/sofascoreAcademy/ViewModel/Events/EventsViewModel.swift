@@ -10,13 +10,8 @@ import UIKit
 import SnapKit
 
 class EventsViewModel: ObservableObject {
-    enum State {
-        case idle
-        case loaded([LeagueSection])
-        case loading
-        case error
-    }
-    @Published private(set) var state: State = .idle
+    
+    @Published private(set) var state: State<[LeagueSection]> = .idle
     
     var sections: [LeagueSection] = []
     func loadSections() async {

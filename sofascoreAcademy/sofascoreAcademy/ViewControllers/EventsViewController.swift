@@ -3,15 +3,16 @@ import SofaAcademic
 import SnapKit
 import Combine
 
-class EventsViewController: UIViewController, BaseViewProtocol {
-    private let topBackgroundView = UIView()
+class EventsViewController: UIViewController, BaseViewProtocol, LoadableView {
+    private var topBackgroundView: TopBackgroundView!
     private let menuView = MenuView()
     private var eventsViewModel = EventsViewModel()
     private let eventsHeaderView = EventsHeaderView()
-    private let activityIndicator = UIActivityIndicatorView(style: .medium)
-    private let errorLabel = UILabel()
     private let matchesTableView: UITableView = .init()
     private var cancellables = Set<AnyCancellable>()
+    
+    let activityIndicator = UIActivityIndicatorView(style: .medium)
+    let errorLabel = UILabel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,54 +28,33 @@ class EventsViewController: UIViewController, BaseViewProtocol {
         }
         observeEventsViewModel()
     }
-    
-    private func observeEventsViewModel () {
+    private func observeEventsViewModel() {
         eventsViewModel.$state
             .receive(on: DispatchQueue.main)
             .sink { [weak self] state in
-                self?.handleState(state)
+                self?.handleState(state,
+                                  onLoading: {
+                                      self?.showLoadingState()
+                                  },
+                                  onLoaded: { _ in
+                                      self?.showLoadedState()
+                                  },
+                                  onError: {
+                                      self?.showErrorState()
+                                  },
+                                  onIdle: {
+                                      Task {
+                                          await self?.eventsViewModel.loadSections()
+                                      }
+                                  })
             }
             .store(in: &cancellables)
-    }
-    
-    private func handleState(_ state: EventsViewModel.State) {
-        switch state {
-        case .idle:
-            Task {
-                await eventsViewModel.loadSections()
-            }
-        case .loading:
-            showLoadingState()
-        case .loaded(_):
-            showLoadedState()
-        case .error:
-            showErrorState()
-        }
-    }
-    
-    func showLoadingState() {
-        activityIndicator.startAnimating()
-        hideError()
     }
     
     func showLoadedState() {
         activityIndicator.stopAnimating()
         hideError()
         matchesTableView.reloadData()
-    }
-    
-    func showErrorState() {
-        activityIndicator.stopAnimating()
-        showError("No data available.")
-    }
-    
-    func showError(_ message: String) {
-        errorLabel.text = message
-        errorLabel.isHidden = false
-    }
-
-    func hideError() {
-        errorLabel.isHidden = true
     }
     
     func handleSportSelectionChanged() {
@@ -92,7 +72,7 @@ class EventsViewController: UIViewController, BaseViewProtocol {
     }
     
     func addViews() {
-        view.addSubview(topBackgroundView)
+        topBackgroundView = addTopBackgroundView()
         view.addSubview(menuView)
         view.addSubview(eventsHeaderView)
         view.addSubview(matchesTableView)
@@ -101,11 +81,6 @@ class EventsViewController: UIViewController, BaseViewProtocol {
     }
     
     func setupConstraints() {
-        topBackgroundView.snp.makeConstraints {
-            $0.top.leading.trailing.equalToSuperview()
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.top)
-        }
-        
         eventsHeaderView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             $0.leading.trailing.equalToSuperview()
@@ -132,7 +107,6 @@ class EventsViewController: UIViewController, BaseViewProtocol {
         view.backgroundColor = .appBackground
         matchesTableView.separatorStyle = .none
         matchesTableView.backgroundColor = .clear
-        topBackgroundView.backgroundColor = .headerBackground
         setTableViewDelegates()
         setupTableView(matchesTableView: matchesTableView)
         
@@ -171,6 +145,14 @@ extension EventsViewController: MatchTableCellDelegate {
     }
 }
 
+// MARK: - LeagueHeaderViewDelegate
+extension EventsViewController: LeagueHeaderViewDelegate {
+    func didTapLeague(_ league: League) {
+        let leagueDetailsVC = LeagueDetailsViewController(league: league)
+        navigationController?.pushViewController(leagueDetailsVC, animated: true)
+    }
+}
+
 // MARK: - UITableViewDelegate, UITableViewDataSource
 extension EventsViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -199,6 +181,7 @@ extension EventsViewController: UITableViewDelegate, UITableViewDataSource {
         }
         let league = eventsViewModel.sections[section].league
         header.configure(with: league)
+        header.delegate = self
         return header
     }
     
@@ -210,4 +193,3 @@ extension EventsViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
 }
-

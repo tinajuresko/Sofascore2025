@@ -15,12 +15,28 @@ struct EventDetailsViewModel {
         self.event = event
     }
     
+    var id: Int {
+        return event.id
+    }
+    
+    var status: EventStatus {
+        return event.status
+    }
+
     var time: String {
         return event.startTimestamp.asDate.hourMinute
     }
     
+    var homeTeamId: Int {
+        return event.homeTeam.id
+    }
+    
     var homeTeamName: String {
         return event.homeTeam.name
+    }
+    
+    var awayTeamId: Int {
+        return event.awayTeam.id
     }
     
     var awayTeamName: String {
@@ -130,5 +146,29 @@ struct EventDetailsViewModel {
         combined.append(awayScoreAttr)
         
         return combined
+    }
+    
+    var incidentPeriods: [[Incident]] {
+        guard let incidents = event.incidents else { return [] }
+        return splitIncidentsByPeriod(incidents)
+    }
+
+    func splitIncidentsByPeriod(_ incidents: [Incident]) -> [[Incident]] {
+        var result: [[Incident]] = []
+        var currentPeriod: [Incident] = []
+
+        for incident in incidents {
+            currentPeriod.append(incident)
+            if incident.type == .periodEnd {
+                result.append(currentPeriod)
+                currentPeriod = []
+            }
+        }
+
+        if !currentPeriod.isEmpty {
+            result.append(currentPeriod)
+        }
+
+        return result
     }
 }

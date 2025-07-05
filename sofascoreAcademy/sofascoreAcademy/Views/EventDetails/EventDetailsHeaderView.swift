@@ -10,6 +10,10 @@ import UIKit
 import SnapKit
 import SofaAcademic
 
+protocol EventDetailsHeaderViewDelegate: AnyObject {
+    func didTapTeam(isHomeTeam: Bool)
+}
+
 class EventDetailsHeaderView: BaseView {
     
     private let homeTeamLogoImageView = AsyncImageView()
@@ -18,9 +22,8 @@ class EventDetailsHeaderView: BaseView {
     private let awayTeamLabel = UILabel()
     private let eventDetailLabel = UILabel()
     private let eventStatusLabel = UILabel()
-    private let viewTournamentsButton = UIButton()
-    private let resultsView = UIView()
-    private let resultsLabel = UILabel()
+    
+    weak var delegate: EventDetailsHeaderViewDelegate?
         
     override func addViews() {
         super.addViews()
@@ -31,12 +34,16 @@ class EventDetailsHeaderView: BaseView {
         addSubview(awayTeamLabel)
         addSubview(eventDetailLabel)
         addSubview(eventStatusLabel)
-        addSubview(resultsView)
-        resultsView.addSubview(resultsLabel)
-        addSubview(viewTournamentsButton)
     }
         
     override func styleViews() {
+        backgroundColor = .white
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowOpacity = 0.15
+        layer.shadowOffset = CGSize(width: 0, height: 4)
+        layer.shadowRadius = 6
+        layer.masksToBounds = false
+        
         homeTeamLabel.font = .regularBold14
         awayTeamLabel.font = .regularBold14
         homeTeamLabel.textColor = .primaryBlack
@@ -53,22 +60,20 @@ class EventDetailsHeaderView: BaseView {
         eventStatusLabel.font = .regular14
         eventStatusLabel.textAlignment = .center
         eventStatusLabel.numberOfLines = 2
-            
-        resultsView.backgroundColor = .containerBackground
-        resultsView.layer.cornerRadius = 6
-            
-        resultsLabel.text = "No result yet."
-        resultsLabel.font = .regular14
-        resultsLabel.textColor = .secondaryGray
-        resultsLabel.textAlignment = .center
-            
-        viewTournamentsButton.setTitle("View tournaments", for: .normal)
-        viewTournamentsButton.titleLabel?.font = .regularBold14
-        viewTournamentsButton.setTitleColor(.headerBackground, for: .normal)
-        viewTournamentsButton.layer.borderColor = UIColor.headerBackground.cgColor
-        viewTournamentsButton.layer.borderWidth = 2
     }
-        
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let shadowHeight: CGFloat = 6
+        let shadowRect = CGRect(
+            x: 0,
+            y: bounds.height - shadowHeight,
+            width: bounds.width,
+            height: shadowHeight
+        )
+        layer.shadowPath = UIBezierPath(rect: shadowRect).cgPath
+    }
+
     override func setupConstraints() {
         super.setupConstraints()
             
@@ -100,30 +105,14 @@ class EventDetailsHeaderView: BaseView {
             $0.top.equalToSuperview().offset(16)
             $0.centerX.equalToSuperview()
             $0.width.greaterThanOrEqualTo(136)
+            $0.height.equalTo(40)
         }
             
         eventStatusLabel.snp.makeConstraints {
-            $0.top.equalTo(eventDetailLabel.snp.bottom).offset(8)
+            $0.top.equalTo(eventDetailLabel.snp.bottom)
             $0.centerX.equalToSuperview()
             $0.width.greaterThanOrEqualTo(136)
-        }
-            
-        resultsView.snp.makeConstraints {
-            $0.top.equalTo(homeTeamLabel.snp.bottom).offset(40)
-            $0.leading.equalToSuperview().offset(layoutMargins.left)
-            $0.trailing.equalToSuperview().offset(-layoutMargins.right)
-            $0.height.equalTo(52)
-        }
-            
-        resultsLabel.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(8)
-        }
-            
-        viewTournamentsButton.snp.makeConstraints {
-            $0.top.equalTo(resultsView.snp.bottom).offset(8)
-            $0.leading.equalToSuperview().offset(layoutMargins.left).offset(74)
-            $0.trailing.equalToSuperview().offset(-layoutMargins.right).offset(-74)
-            $0.height.equalTo(40)
+            $0.height.equalTo(16)
         }
     }
         
@@ -144,5 +133,25 @@ class EventDetailsHeaderView: BaseView {
             eventStatusLabel.text = selectedEvent.eventDetailsStatusText
         }
         eventStatusLabel.textColor = selectedEvent.eventDetailsStatusColor
+        
+        setupGestureRecognizers()
+    }
+    
+    override func setupGestureRecognizers() {
+        let homeTap = UITapGestureRecognizer(target: self, action: #selector(homeTeamTapped))
+        homeTeamLogoImageView.isUserInteractionEnabled = true
+        homeTeamLogoImageView.addGestureRecognizer(homeTap)
+
+        let awayTap = UITapGestureRecognizer(target: self, action: #selector(awayTeamTapped))
+        awayTeamLogoImageView.isUserInteractionEnabled = true
+        awayTeamLogoImageView.addGestureRecognizer(awayTap)
+    }
+    
+    @objc private func homeTeamTapped() {
+        delegate?.didTapTeam(isHomeTeam: true)
+    }
+
+    @objc private func awayTeamTapped() {
+        delegate?.didTapTeam(isHomeTeam: false)
     }
 }
